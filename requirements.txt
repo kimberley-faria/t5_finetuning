@@ -5,4 +5,4 @@ tensorflow==2.4.1
 tensorflow-datasets==4.2.0
 scikit-learn==0.24.1
 tensorboard==2.4.1
-wandb
+wandb==0.10.21
