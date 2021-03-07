@@ -1,0 +1,20 @@
+project: t5-finetuning
+entity: kfaria
+program: run_model.py
+command:
+  - ${env}
+  - ./venv/Scripts/python.exe
+  - ${program}
+  - ${args}
+method: grid
+parameters:
+  lr:
+    values: [0.001, 0.0001, 0.0005, 0.00001]
+  batch_size:
+    value: 32
+  encoder_max_len:
+    value: 256
+  ntrain:
+    value: 20000
+  nvalid:
+    value: 5000
