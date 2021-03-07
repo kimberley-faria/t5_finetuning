@@ -95,7 +95,10 @@ def create_dataset(dataset, cache_path=None, batch_size=4, buffer_size=1000, shu
     return dataset
 
 
-class SnapthatT5(TFT5ForConditionalGeneration):
+
+
+
+class FinetunedT5(TFT5ForConditionalGeneration):
     def __init__(self, *args, log_dir=None, cache_dir=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.loss_tracker = tf.keras.metrics.Mean(name='loss')
@@ -123,6 +126,7 @@ class SnapthatT5(TFT5ForConditionalGeneration):
 
         return metrics
 
+    @tf.function
     def test_step(self, data):
         x = data
         y = x["labels"]
