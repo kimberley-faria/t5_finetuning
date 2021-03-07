@@ -134,3 +134,6 @@ aclImdb/
 
 # ide files
 .idea
+
+#wandb logs
+wandb
