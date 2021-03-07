@@ -130,7 +130,6 @@ dmypy.json
 
 # data dirs
 data/
-aclImdb/
 
 # ide files
 .idea

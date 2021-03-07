@@ -64,7 +64,7 @@ def _buil_examples_from_files(files, sentiment, tokenizer, max_len=512):
 
 def get_dataset(tokenizer, type_path, max_len=512, subset=None):
     logger.info(f"Get {type_path} dataset of size {subset} (If None, get entire dataset)")
-    data_dir = 'aclImdb'
+    data_dir = os.path.join(SETTINGS.get('data'), 'aclImdb')
     pos_file_path = os.path.join(data_dir, type_path, 'pos')
     neg_file_path = os.path.join(data_dir, type_path, 'neg')
 
