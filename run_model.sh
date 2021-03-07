@@ -9,10 +9,6 @@ conda activate default
 which python
 module list
 
-batch=$1
-max_len=$2
-n_train=$3
-lr=$4
-session_num=$5
+sweep_file=$1
 
-python run_model.py $batch $max_len $n_train $lr $session_num
+wandb sweep $sweep_file | grep -oP '(?<=ID: ).*' | xargs -I{} wandb agent --count 1 {} --project t5-finetuning --entity kfaria
