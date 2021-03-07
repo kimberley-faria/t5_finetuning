@@ -230,7 +230,7 @@ def train_test_model():
 
     model.compile(optimizer=optimizer, metrics=metrics)
 
-    model.fit(train_ds, epochs=1, batch_size=config.batch_size, callbacks=callbacks,
+    model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
               validation_data=valid_ds, validation_batch_size=config.batch_size)
 
     model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
@@ -251,6 +251,7 @@ if __name__ == '__main__':
         'ntrain': 64,
         'nvalid': 32,
         'lr': 0.001,
+        'epochs': 20
     }
 
     if not os.path.exists(SETTINGS.get('data')):

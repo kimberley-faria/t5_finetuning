@@ -18,3 +18,5 @@ parameters:
     value: 20000
   nvalid:
     value: 5000
+  epochs:
+    value: 20
