@@ -5,9 +5,10 @@ import re
 import sys
 
 import tensorflow as tf
+import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer
 
-import wandb
+from config import SETTINGS
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -17,8 +18,6 @@ handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-
-
 
 
 def _build(pos_files, neg_files, tokenizer, max_len=512):
@@ -116,9 +115,6 @@ def create_dataset(dataset, cache_path=None, batch_size=4, buffer_size=1000, shu
     return dataset
 
 
-
-
-
 class FinetunedT5(TFT5ForConditionalGeneration):
     def __init__(self, *args, log_dir=None, cache_dir=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -160,6 +156,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         self.loss_tracker.update_state(loss)
         self.compiled_metrics.update_state(y, logits)
         return {m.name: m.result() for m in self.metrics}
+
 
 class CustomCallback(tf.keras.callbacks.Callback):
     def __init__(self, step=None):
@@ -208,7 +205,7 @@ class CustomCallback(tf.keras.callbacks.Callback):
         self.valid_batch += 1
 
 
-def train_test_model(config, run_name):
+def train_test_model():
     optimizer = tf.keras.optimizers.Adam(config.lr)
 
     tokenizer = AutoTokenizer.from_pretrained('t5-small')
@@ -233,8 +230,10 @@ def train_test_model(config, run_name):
 
     model.compile(optimizer=optimizer, metrics=metrics)
 
-    model.fit(train_ds, epochs=25, batch_size=config.batch_size, callbacks=callbacks,
+    model.fit(train_ds, epochs=1, batch_size=config.batch_size, callbacks=callbacks,
               validation_data=valid_ds, validation_batch_size=config.batch_size)
+
+    model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
 
     # Evaluate on Test Dataset
     # tf_test_ds = to_tf_dataset(
@@ -245,23 +244,18 @@ def train_test_model(config, run_name):
     # return [r.history[x][0] for x in ['accuracy', 'loss', 'val_accuracy', 'val_loss']] + [test_accuracy, test_loss]
 
 
-def run(run_dir, config, run_name):
-    train_test_model(config, run_name)
-
-
-DATA_DIR = ".\\data"
-LOG_DIR = f"{DATA_DIR}\\experiments\\t5\\logs"
-SAVE_PATH = f"{DATA_DIR}\\experiments\\t5\\models"
-
 if __name__ == '__main__':
     hparams = {
         'batch_size': 8,
         'encoder_max_len': 256,
         'ntrain': 64,
-        'nvalid': 5000,
+        'nvalid': 32,
         'lr': 0.001,
     }
-    wandb.init(project='t5-finetuning', config=hparams)
+
+    if not os.path.exists(SETTINGS.get('data')):
+        os.mkdir(SETTINGS.get('data'))
+
+    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}")
     config = wandb.config
-    run_name = f"run-0"
-    run(f"{LOG_DIR}\\hparam_tuning\\{run_name}", config, run_name)
+    train_test_model()
