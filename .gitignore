@@ -129,11 +129,10 @@ dmypy.json
 .pyre/
 
 # data dirs
-data/
 aclImdb/
 
 # ide files
 .idea
 
 #wandb logs
-wandb
+data/wandb
