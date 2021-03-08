@@ -19,7 +19,8 @@ tar -xvf aclImdb_v1.tar.gz
 mkdir aclImdb/val aclImdb/val/pos aclImdb/val/neg
 
 Seperate out val files
-import os
+
+`import os
 import glob
 import shutil
 import random
@@ -37,4 +38,4 @@ val_neg_files = train_neg_files[:2500]
 for f in val_pos_files:
     shutil.move(f,  'aclImdb/val/pos')
 for f in val_neg_files:
-    shutil.move(f,  'aclImdb/val/neg')
+    shutil.move(f,  'aclImdb/val/neg')`
