@@ -1,6 +1,4 @@
 #!/bin/sh
-#SBATCH --job-name=t5_finetuning_sample_run
-#SBATCH -o /mnt/nfs/scratch1/kfaria/sbatch_output/t5_finetuning_sample_run.out
 #SBATCH --partition=m40-long
 #SBATCH --gres=gpu:1
 #SBATCH --mem=40GB

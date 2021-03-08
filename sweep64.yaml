@@ -1,11 +1,6 @@
 project: t5-finetuning
 entity: kfaria
 program: run_model.py
-command:
-  - ${env}
-  - ./venv/Scripts/python.exe
-  - ${program}
-  - ${args}
 method: grid
 parameters:
   lr:
