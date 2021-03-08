@@ -1,5 +1,5 @@
-# SYSTEM = 'gypsum'
-SYSTEM = 'local'
+SYSTEM = 'gypsum'
+# SYSTEM = 'local'
 
 # For data, not backed up
 SCRATCH_DIR = "/mnt/nfs/scratch1/kfaria"
