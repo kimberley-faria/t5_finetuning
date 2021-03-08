@@ -251,7 +251,7 @@ if __name__ == '__main__':
         'ntrain': 64,
         'nvalid': 32,
         'lr': 0.001,
-        'epochs': 20
+        'epochs': 1
     }
 
     if not os.path.exists(SETTINGS.get('data')):
