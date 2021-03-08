@@ -197,7 +197,7 @@ class CustomCallback(tf.keras.callbacks.Callback):
 
         wandb.log(
             {
-                'valid_batch': self.valid_batch,
+                f'{step}_batch': self.valid_batch,
                 f'{step}_accuracy': logs['accuracy'],
                 f'{step}_loss': logs['loss']
             }
@@ -236,12 +236,11 @@ def train_test_model():
     model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
 
     # Evaluate on Test Dataset
-    # tf_test_ds = to_tf_dataset(
-    #     get_dataset(tokenizer, 'test', max_len=config.encoder_max_len, subset=None))
-    # test_ds = create_dataset(tf_test_ds, batch_size=config.batch_size, shuffling=True, cache_path=None)
-    # model.evaluate(test_ds, callbacks=[CustomCallback(step='test')])
-
-    # return [r.history[x][0] for x in ['accuracy', 'loss', 'val_accuracy', 'val_loss']] + [test_accuracy, test_loss]
+    if config.evaluate:
+        tf_test_ds = to_tf_dataset(
+            get_dataset(tokenizer, 'test', max_len=config.encoder_max_len, subset=100))
+        test_ds = create_dataset(tf_test_ds, batch_size=config.batch_size, shuffling=True, cache_path=None)
+        model.evaluate(test_ds, callbacks=[CustomCallback(step='test')])
 
 
 if __name__ == '__main__':
@@ -250,8 +249,9 @@ if __name__ == '__main__':
         'encoder_max_len': 256,
         'ntrain': 64,
         'nvalid': 32,
-        'lr': 0.001,
-        'epochs': 1
+        'lr': 0.0001,
+        'epochs': 1,
+        'evaluate': True
     }
 
     if not os.path.exists(SETTINGS.get('data')):
