@@ -10,7 +10,7 @@ WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria"
 SETTINGS_DICT = {
     # Unix-style
     'gypsum': {
-        'data': f"{SCRATCH_DIR}/data",
+        'data': SCRATCH_DIR,
         'root': WORKING_DIR
     },
     # Windows-style
