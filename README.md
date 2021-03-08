@@ -22,6 +22,7 @@ Seperate out val files
 import os
 import glob
 import shutil
+import random
 
 train_pos_files = glob.glob('aclImdb/train/pos/*.txt')
 train_neg_files = glob.glob('aclImdb/train/neg/*.txt')
