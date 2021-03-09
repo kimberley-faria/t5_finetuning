@@ -1,87 +1,28 @@
-import glob
-import logging
 import os
-import re
-import sys
 
+import pandas as pd
 import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer
 
 from config import SETTINGS
 
-logger = logging.getLogger('tensorflow')
-logger.setLevel(logging.INFO)
-
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+tokenizer = AutoTokenizer.from_pretrained('t5-base')
 
 
-def _build(pos_files, neg_files, tokenizer, max_len=512):
-    pos_inputs, pos_targets = _buil_examples_from_files(pos_files, 'positive', tokenizer, max_len=max_len)
-    neg_inputs, neg_targets = _buil_examples_from_files(neg_files, 'negative', tokenizer, max_len=max_len)
-    logger.info("Return all inputs and targets")
-    return pos_inputs + neg_inputs, pos_targets + neg_targets
+def get_dataset(tokenizer, data_dir, type_path, max_len=512):
+    path = os.path.join(data_dir, type_path + '.txt')
+    data_column = "text"
+    class_column = "emotion"
+    data = pd.read_csv(path, sep=";", header=None, names=[data_column, class_column],
+                       engine="python")
 
+    inputs, targets = _build(data, tokenizer, max_len=max_len)
 
-def _buil_examples_from_files(files, sentiment, tokenizer, max_len=512):
-    inputs = []
-    targets = []
-
-    REPLACE_NO_SPACE = re.compile("[.;:!\'?,\"()\[\]]")
-    REPLACE_WITH_SPACE = re.compile("(<br\s*/><br\s*/>)|(\-)|(\/)")
-
-    for i, path in enumerate(files):
-        with open(path, 'r', encoding="utf8") as f:
-            text = f.read()
-
-        line = text.strip()
-        line = REPLACE_NO_SPACE.sub("", line)
-        line = REPLACE_WITH_SPACE.sub("", line)
-        line = f"{line}"
-
-        target = f"{sentiment}"
-
-        # tokenize inputs
-        tokenized_inputs = tokenizer(
-            line, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
-        )
-        # tokenize targets
-        tokenized_targets = tokenizer(
-            target, max_length=2, padding='max_length', return_tensors="tf", truncation=True
-        )
-
-        inputs.append(tokenized_inputs)
-        targets.append(tokenized_targets)
-        logger.debug(f"Done processing file {i} of {len(files)} for label - {sentiment}")
-
-    logger.info(f"Return tokenized inputs and targets for label: {sentiment}")
-    return inputs, targets
-
-
-def get_dataset(tokenizer, type_path, max_len=512, subset=None):
-    logger.info(f"Get {type_path} dataset of size {subset} (If None, get entire dataset)")
-    data_dir = os.path.join(SETTINGS.get('data'), 'aclImdb')
-    pos_file_path = os.path.join(data_dir, type_path, 'pos')
-    neg_file_path = os.path.join(data_dir, type_path, 'neg')
-
-    pos_files = glob.glob("%s/*.txt" % pos_file_path)
-    neg_files = glob.glob("%s/*.txt" % neg_file_path)
-
-    if subset:
-        inputs, targets = _build(pos_files[:(subset // 2)], neg_files[:(subset // 2)], tokenizer, max_len=max_len)
-    else:
-        inputs, targets = _build(pos_files, neg_files, tokenizer, max_len=max_len)
-
-    logger.info(f"Process ids and masks for dataset: {type_path}")
     return [get_ids_and_masks(inputs, targets, i) for i in range(len(inputs))]
 
 
 def get_ids_and_masks(inputs, targets, index):
-    logger.debug(f"Split up the ids and attention_masks for inputs and targets for index {index}")
     source_ids = inputs[index]["input_ids"][0]
     target_ids = targets[index]["input_ids"][0]
 
@@ -92,27 +33,28 @@ def get_ids_and_masks(inputs, targets, index):
             "decoder_attention_mask": target_mask}
 
 
-def to_tf_dataset(dataset):
-    logger.info("Get a tf dataset")
-    columns = ['input_ids', 'attention_mask', 'labels', 'decoder_attention_mask']
-    return_types = {'input_ids': tf.int32, 'attention_mask': tf.int32,
-                    'labels': tf.int32, 'decoder_attention_mask': tf.int32, }
-    return_shapes = {'input_ids': tf.TensorShape([None]), 'attention_mask': tf.TensorShape([None]),
-                     'labels': tf.TensorShape([None]), 'decoder_attention_mask': tf.TensorShape([None])}
-    ds = tf.data.Dataset.from_generator(lambda: dataset, return_types, return_shapes)
-    logger.info(f"TF Dataset {ds.__str__()} returned")
-    return ds
+def _build(data, tokenizer, max_len=512):
+    inputs = []
+    targets = []
+    for idx in range(len(data)):
+        data_column = "text"
+        class_column = "emotion"
 
+        input_, target = data.loc[idx, data_column], data.loc[idx, class_column]
 
-def create_dataset(dataset, cache_path=None, batch_size=4, buffer_size=1000, shuffling=True):
-    logger.info(f"Create dataset of batch:{batch_size}, shuffle: {shuffling}, buffer: {buffer_size}")
-    if cache_path is not None:
-        dataset = dataset.cache(cache_path)
-    if shuffling:
-        dataset = dataset.shuffle(buffer_size)
-    dataset = dataset.batch(batch_size)
-    dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
-    return dataset
+        # tokenize inputs
+        tokenized_inputs = tokenizer.batch_encode_plus(
+            [input_], max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
+        )
+        # tokenize targets
+        tokenized_targets = tokenizer.batch_encode_plus(
+            [target], max_length=2, padding='max_length', return_tensors="tf", truncation=True
+        )
+
+        inputs.append(tokenized_inputs)
+        targets.append(tokenized_targets)
+
+    return inputs, targets
 
 
 class FinetunedT5(TFT5ForConditionalGeneration):
@@ -164,11 +106,8 @@ class CustomCallback(tf.keras.callbacks.Callback):
         self.step = step
         self.train_batch = 0
         self.valid_batch = 0
-        logger.info(f"Initialized CustomCallback to epoch: {self.epoch}, step: {step} (If none, running training step),"
-                    f" train_batch: {self.train_batch}, valid_batch: {self.valid_batch}")
 
     def on_epoch_end(self, epoch, logs=None):
-        logger.debug(f"End of epoch {epoch} ; got log keys: {list(logs.keys())}")
         wandb.log(
             {
                 'epoch': epoch,
@@ -179,8 +118,6 @@ class CustomCallback(tf.keras.callbacks.Callback):
         self.epoch += 1
 
     def on_train_batch_end(self, batch, logs=None):
-        logger.debug(f"End of batch {self.train_batch} of train; got log keys: {list(logs.keys())}")
-
         wandb.log(
             {
                 'train_batch': self.train_batch,
@@ -193,16 +130,34 @@ class CustomCallback(tf.keras.callbacks.Callback):
     def on_test_batch_end(self, batch, logs=None):
         step = self.step if self.step else 'val'
 
-        logger.debug(f"End of batch {self.valid_batch} of {step}; got log keys: {list(logs.keys())}")
-
         wandb.log(
             {
-                f'{step}_batch': self.valid_batch,
+                'valid_batch': self.valid_batch,
                 f'{step}_accuracy': logs['accuracy'],
                 f'{step}_loss': logs['loss']
             }
         )
         self.valid_batch += 1
+
+
+def to_tf_dataset(dataset):
+    columns = ['input_ids', 'attention_mask', 'labels', 'decoder_attention_mask']
+    return_types = {'input_ids': tf.int32, 'attention_mask': tf.int32,
+                    'labels': tf.int32, 'decoder_attention_mask': tf.int32, }
+    return_shapes = {'input_ids': tf.TensorShape([None]), 'attention_mask': tf.TensorShape([None]),
+                     'labels': tf.TensorShape([None]), 'decoder_attention_mask': tf.TensorShape([None])}
+    ds = tf.data.Dataset.from_generator(lambda: dataset, return_types, return_shapes)
+    return ds
+
+
+def create_dataset(dataset, cache_path=None, batch_size=4, buffer_size=1000, shuffling=True):
+    if cache_path is not None:
+        dataset = dataset.cache(cache_path)
+    if shuffling:
+        dataset = dataset.shuffle(buffer_size)
+    dataset = dataset.batch(batch_size)
+    dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
+    return dataset
 
 
 def train_test_model():
@@ -214,12 +169,10 @@ def train_test_model():
     callbacks = [CustomCallback()]
 
     # Test for 2, 4, 8, 16, 32, 64, etc.. till 20k
-    tf_train_ds = to_tf_dataset(
-        get_dataset(tokenizer, 'train', max_len=config.encoder_max_len, subset=config.ntrain))
+    tf_train_ds = to_tf_dataset(get_dataset(tokenizer, 'emotion_data', 'train', 512))
 
     # Always run on entire validation set (5000)
-    tf_valid_ds = to_tf_dataset(
-        get_dataset(tokenizer, 'val', max_len=config.encoder_max_len, subset=config.nvalid))
+    tf_valid_ds = to_tf_dataset(get_dataset(tokenizer, 'emotion_data', 'val', 512))
 
     train_ds = create_dataset(tf_train_ds, batch_size=config.batch_size, shuffling=True,
                               cache_path=None, buffer_size=2500)
@@ -237,26 +190,25 @@ def train_test_model():
 
     # Evaluate on Test Dataset
     if config.evaluate:
-        tf_test_ds = to_tf_dataset(
-            get_dataset(tokenizer, 'test', max_len=config.encoder_max_len, subset=100))
+        tf_test_ds = to_tf_dataset(get_dataset(tokenizer, 'emotion_data', 'test', 512))
         test_ds = create_dataset(tf_test_ds, batch_size=config.batch_size, shuffling=True, cache_path=None)
         model.evaluate(test_ds, callbacks=[CustomCallback(step='test')])
 
 
 if __name__ == '__main__':
     hparams = {
-        'batch_size': 8,
+        'batch_size': 32,
         'encoder_max_len': 256,
+        'lr': 0.0001,
+        'epochs': 5,
         'ntrain': 64,
         'nvalid': 32,
-        'lr': 0.0001,
-        'epochs': 1,
-        'evaluate': True
+        'ntest': 100
     }
 
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
-    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}")
+    wandb.init(project='t5-emotion-finetuning', config=hparams)
     config = wandb.config
     train_test_model()
