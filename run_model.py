@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import sys
+import textwrap
 
 import tensorflow as tf
 import wandb
@@ -119,16 +120,22 @@ class FinetunedT5(TFT5ForConditionalGeneration):
     def __init__(self, *args, log_dir=None, cache_dir=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.loss_tracker = tf.keras.metrics.Mean(name='loss')
+        self.accuracy_1st_token = tf.keras.metrics.Accuracy(name='accuracy_1st_token')
+        self.accuracy_all_tokens = tf.keras.metrics.Accuracy(name='accuracy_all_tokens')
 
     @tf.function
     def train_step(self, data):
         x = data
         y = x["labels"]
-        y = tf.reshape(y, [-1, 1])
         with tf.GradientTape() as tape:
             outputs = self(x, training=True)
             loss = outputs[0]
             logits = outputs[1]
+            softmaxed_output = tf.nn.softmax(logits, axis=-1)
+            y_pred = tf.argmax(softmaxed_output, axis=-1)
+            y_no_eos = tf.gather(y, [0], axis=1)
+            y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
+            # tf.print(y_no_eos, y_pred_no_eos)
             loss = tf.reduce_mean(loss)
 
             grads = tape.gradient(loss, self.trainable_variables)
@@ -137,7 +144,8 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         lr = self.optimizer._decayed_lr(tf.float32)
 
         self.loss_tracker.update_state(loss)
-        self.compiled_metrics.update_state(y, logits)
+        self.accuracy_all_tokens.update_state(y, y_pred)
+        self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
         metrics = {m.name: m.result() for m in self.metrics}
         metrics.update({'lr': lr})
 
@@ -147,45 +155,57 @@ class FinetunedT5(TFT5ForConditionalGeneration):
     def test_step(self, data):
         x = data
         y = x["labels"]
-        y = tf.reshape(y, [-1, 1])
         output = self(x, training=False)
         loss = output[0]
         loss = tf.reduce_mean(loss)
         logits = output[1]
+        softmaxed_output = tf.nn.softmax(logits, axis=-1)
+        y_pred = tf.argmax(softmaxed_output, axis=-1)
+        y_no_eos = tf.gather(y, [0], axis=1)
+        y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
+        # tf.print(y_no_eos, y_pred_no_eos)
 
         self.loss_tracker.update_state(loss)
-        self.compiled_metrics.update_state(y, logits)
+        self.accuracy_all_tokens.update_state(y, y_pred)
+        self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
         return {m.name: m.result() for m in self.metrics}
 
 
 class CustomCallback(tf.keras.callbacks.Callback):
     def __init__(self, step=None):
-        self.epoch = 0
         self.step = step
         self.train_batch = 0
-        self.valid_batch = 0
-        logger.info(f"Initialized CustomCallback to epoch: {self.epoch}, step: {step} (If none, running training step),"
-                    f" train_batch: {self.train_batch}, valid_batch: {self.valid_batch}")
+        self.validation_batch = 0
+        self.epoch = 0
+        self.val_acc_all_tokens = 0
+        self.val_acc_1st_token = 0
+        logger.info(f"Initialized CustomCallback to step: {step} ")
 
     def on_epoch_end(self, epoch, logs=None):
         logger.debug(f"End of epoch {epoch} ; got log keys: {list(logs.keys())}")
         wandb.log(
             {
                 'epoch': epoch,
-                'accuracy': logs['accuracy'],
-                'loss': logs['loss']
+                'accuracy_1st_token': logs['accuracy_1st_token'],
+                'accuracy_all_tokens': logs['accuracy_all_tokens'],
+                'loss': logs['loss'],
+                'val_accuracy_1st_token': self.val_acc_1st_token,
+                'val_accuracy_all_tokens': self.val_acc_all_tokens,
+                'val_loss': logs['val_loss'],
             }
         )
-        self.epoch += 1
+        self.epoch = epoch
 
     def on_train_batch_end(self, batch, logs=None):
-        logger.debug(f"End of batch {self.train_batch} of train; got log keys: {list(logs.keys())}")
+        logger.debug(
+            f"({self.train_batch}) End of batch {batch} of epoch {self.epoch} of train; got log keys: {list(logs.keys())}")
 
         wandb.log(
             {
+                'training_batch_accuracy_1st_token': logs['accuracy_1st_token'],
+                'training_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
+                'training_batch_loss': logs['loss'],
                 'train_batch': self.train_batch,
-                'train_accuracy': logs['accuracy'],
-                'train_loss': logs['loss']
             }
         )
         self.train_batch += 1
@@ -193,16 +213,20 @@ class CustomCallback(tf.keras.callbacks.Callback):
     def on_test_batch_end(self, batch, logs=None):
         step = self.step if self.step else 'val'
 
-        logger.debug(f"End of batch {self.valid_batch} of {step}; got log keys: {list(logs.keys())}")
+        logger.debug(
+            f"{self.validation_batch}) End of batch {batch} of epoch {self.epoch} of {step}; got log keys: {list(logs.keys())}")
 
         wandb.log(
             {
-                'valid_batch': self.valid_batch,
-                f'{step}_accuracy': logs['accuracy'],
-                f'{step}_loss': logs['loss']
+                f'{step}_batch_accuracy_1st_token': logs['accuracy_1st_token'],
+                f'{step}_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
+                f'{step}_batch_loss': logs['loss'],
+                'val_batch': self.validation_batch,
             }
         )
-        self.valid_batch += 1
+        self.validation_batch += 1
+        self.val_acc_all_tokens = logs['accuracy_all_tokens']
+        self.val_acc_1st_token = logs['accuracy_1st_token']
 
 
 def train_test_model():
@@ -210,7 +234,6 @@ def train_test_model():
 
     tokenizer = AutoTokenizer.from_pretrained('t5-small')
 
-    metrics = [tf.keras.metrics.SparseTopKCategoricalAccuracy(name='accuracy')]
     callbacks = [CustomCallback()]
 
     # Test for 2, 4, 8, 16, 32, 64, etc.. till 20k
@@ -228,35 +251,57 @@ def train_test_model():
 
     model = FinetunedT5.from_pretrained("t5-small")
 
-    model.compile(optimizer=optimizer, metrics=metrics)
+    model.compile(optimizer=optimizer)
 
     model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
               validation_data=valid_ds, validation_batch_size=config.batch_size)
 
     model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
 
-    # Evaluate on Test Dataset
-    # tf_test_ds = to_tf_dataset(
-    #     get_dataset(tokenizer, 'test', max_len=config.encoder_max_len, subset=None))
-    # test_ds = create_dataset(tf_test_ds, batch_size=config.batch_size, shuffling=True, cache_path=None)
-    # model.evaluate(test_ds, callbacks=[CustomCallback(step='test')])
+    # Few Predictions on Val Set
 
-    # return [r.history[x][0] for x in ['accuracy', 'loss', 'val_accuracy', 'val_loss']] + [test_accuracy, test_loss]
+    loader = tf_valid_ds.shuffle(25000).batch(32)
+    it = iter(loader)
+    batch = next(it)
+
+    outs = model.generate(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'],
+                          max_length=config.encoder_max_len)
+
+    dec = [tokenizer.decode(ids) for ids in outs]
+
+    texts = [tokenizer.decode(ids) for ids in batch['input_ids']]
+    targets = [tokenizer.decode(ids) for ids in batch['labels']]
+
+    for i in range(32):
+        lines = textwrap.wrap("Review:\n%s\n" % texts[i], width=100)
+        print("\n".join(lines))
+        print("\nActual sentiment: %s" % targets[i])
+        print("\nPredicted sentiment: %s" % dec[i])
+        print(f"\nPredicted id: {outs[i]}")
+        print("=====================================================================\n")
+
+    # Evaluate on Test Dataset
+    if config.evaluate:
+        tf_test_ds = to_tf_dataset(
+            get_dataset(tokenizer, 'test', max_len=config.encoder_max_len))
+        test_ds = create_dataset(tf_test_ds, batch_size=config.batch_size, shuffling=True, cache_path=None)
+        model.evaluate(test_ds, callbacks=[CustomCallback(step='test')])
 
 
 if __name__ == '__main__':
     hparams = {
-        'batch_size': 8,
+        'batch_size': 2,
         'encoder_max_len': 256,
-        'ntrain': 64,
-        'nvalid': 32,
+        'ntrain': 8,
+        'nvalid': 1000,
         'lr': 0.001,
-        'epochs': 1
+        'epochs': 20,
+        'evaluate': False
     }
 
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
-    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}")
+    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}", tags=["rev-6", "gypsum"])
     config = wandb.config
     train_test_model()
