@@ -6,11 +6,11 @@ parameters:
   lr:
     values: [0.001, 0.0001, 0.0005, 0.00001]
   batch_size:
-    value: 2
+    value: 16
   encoder_max_len:
     value: 256
   ntrain:
-    value: 8
+    value: 64
   nvalid:
     value: 1000
   epochs:
