@@ -43,7 +43,6 @@ def _buil_examples_from_files(files, sentiment, tokenizer, max_len=512):
         line = REPLACE_NO_SPACE.sub("", line)
         line = REPLACE_WITH_SPACE.sub("", line)
         line = f"{line}"
-
         target = f"{sentiment}"
 
         # tokenize inputs
@@ -116,12 +115,34 @@ def create_dataset(dataset, cache_path=None, batch_size=4, buffer_size=1000, shu
     return dataset
 
 
+class AllTokensAccuracy(tf.keras.metrics.Metric):
+
+    def __init__(self, name='custom_accuracy', **kwargs):
+        super(AllTokensAccuracy, self).__init__(name=name, **kwargs)
+        self.total_labels = self.add_weight(name='total', initializer='zeros')
+        self.correct_labels = self.add_weight(name='correct', initializer='zeros')
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        self.total_labels.assign_add(tf.cast(tf.shape(y_pred)[0], 'float32'))
+        is_equal = tf.equal(tf.cast(y_true, 'int32'), tf.cast(y_pred, 'int32'))
+        self.correct_labels.assign_add(tf.reduce_sum(tf.cast(tf.math.reduce_all(is_equal, axis=1), 'float32')))
+
+    def result(self):
+        if tf.equal(self.total_labels, 0.0):
+            return 0.0
+        return tf.divide(self.correct_labels, self.total_labels)
+
+    def reset_states(self):
+        self.total_labels.assign(0.)
+        self.correct_labels.assign(0.)
+
+
 class FinetunedT5(TFT5ForConditionalGeneration):
     def __init__(self, *args, log_dir=None, cache_dir=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.loss_tracker = tf.keras.metrics.Mean(name='loss')
         self.accuracy_1st_token = tf.keras.metrics.Accuracy(name='accuracy_1st_token')
-        self.accuracy_all_tokens = tf.keras.metrics.Accuracy(name='accuracy_all_tokens')
+        self.accuracy_all_tokens = AllTokensAccuracy(name='accuracy_all_tokens')
 
     @tf.function
     def train_step(self, data):
@@ -135,7 +156,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
             y_pred = tf.argmax(softmaxed_output, axis=-1)
             y_no_eos = tf.gather(y, [0], axis=1)
             y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
-            # tf.print(y_no_eos, y_pred_no_eos)
+
             loss = tf.reduce_mean(loss)
 
             grads = tape.gradient(loss, self.trainable_variables)
@@ -163,7 +184,6 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         y_pred = tf.argmax(softmaxed_output, axis=-1)
         y_no_eos = tf.gather(y, [0], axis=1)
         y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
-        # tf.print(y_no_eos, y_pred_no_eos)
 
         self.loss_tracker.update_state(loss)
         self.accuracy_all_tokens.update_state(y, y_pred)
@@ -267,12 +287,12 @@ def train_test_model():
     outs = model.generate(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'],
                           max_length=config.encoder_max_len)
 
-    dec = [tokenizer.decode(ids) for ids in outs]
+    dec = [tokenizer.decode(ids, skip_special_tokens=True) for ids in outs]
 
     texts = [tokenizer.decode(ids) for ids in batch['input_ids']]
     targets = [tokenizer.decode(ids) for ids in batch['labels']]
 
-    for i in range(32):
+    for i in range(config.batch_size):
         lines = textwrap.wrap("Review:\n%s\n" % texts[i], width=100)
         print("\n".join(lines))
         print("\nActual sentiment: %s" % targets[i])
@@ -302,6 +322,6 @@ if __name__ == '__main__':
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
-    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}", tags=["rev-6", "gypsum"])
+    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}", tags=["rev-8", "gypsum"])
     config = wandb.config
     train_test_model()
