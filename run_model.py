@@ -305,3 +305,4 @@ if __name__ == '__main__':
     wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}", tags=["rev-6", "gypsum"])
     config = wandb.config
     train_test_model()
+
