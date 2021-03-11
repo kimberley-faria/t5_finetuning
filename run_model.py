@@ -315,7 +315,7 @@ if __name__ == '__main__':
         'ntrain': 8,
         'nvalid': 1000,
         'lr': 0.001,
-        'epochs': 20,
+        'epochs': 1,
         'evaluate': False
     }
 
