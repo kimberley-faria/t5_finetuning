@@ -252,12 +252,12 @@ def train_test_model(training_ds_fpath, val_ds_fpath):
 
     model.compile(optimizer=optimizer)
 
-    history = model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
+    hist = model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
                         validation_data=valid_ds, validation_batch_size=config.batch_size)
 
     model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
 
-    return history.history
+    return hist.history
 
 
 if __name__ == '__main__':
