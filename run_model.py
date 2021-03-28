@@ -1,14 +1,12 @@
-import glob
 import logging
 import os
-import statistics
 import sys
 
 import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS
+from config import SETTINGS, AMZN_TRAINING_DATASETS
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -267,43 +265,26 @@ if __name__ == '__main__':
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
-    wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}",
-               tags=["rev-11", "gypsum", "amzn-ds"], reinit=True)
+    wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", tags=["rev-12", "gypsum", "amzn-ds"])
     config = wandb.config
+
+    training_ds_fpath = AMZN_TRAINING_DATASETS.format(config.training_ds_number)
+
+    _, _, a = training_ds_fpath.partition("amazon_electronics_c_")
+    train_ds = a.split(".")[0]
 
     first_token_val_accuracies = []
     all_token_val_accuracies = []
 
-    for training_ds_fpath in glob.glob(config.training_ds_fpath):
-        _, _, a = training_ds_fpath.partition("amazon_electronics_c_")
-        train_ds = a.split(".")[0]
-
-        wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", name=train_ds,
-                   tags=["rev-11", "gypsum", "amzn-ds"], reinit=True)
-        history = train_test_model(training_ds_fpath, config.val_ds_fpath)
-        first_token_val_accuracies.append(history['val_accuracy_1st_token'])
-        all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
-        wandb.log(
-            {
-                'training_ds_fpath': train_ds,
-                'first_token_val_accuracy': history['val_accuracy_1st_token'],
-                'all_token_val_accuracy': history['val_accuracy_all_tokens'],
-            }
-        )
-
-    logger.info(
-        f"Number of Epochs: {config.epochs}, Learning Rate: {config.lr}, "
-        f"Train Dataset: {config.training_ds_fpath.split('/')[-1].split('.')[0]}, "
-        f"Average All Tokens Val. Acc.: {statistics.mean(all_token_val_accuracies)}, "
-        f"Average First Token Val. Acc.: {statistics.mean(first_token_val_accuracies)}"
-    )
-
+    history = train_test_model(training_ds_fpath, config.val_ds_fpath)
+    first_token_val_accuracies.append(history['val_accuracy_1st_token'])
+    all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
     wandb.log(
         {
             'num_of_epochs': config.epochs,
             'learning_rate': config.lr,
-            'training_ds': config.training_ds_fpath.split("/")[-1].split(".")[0],
-            'average_all_token_val_accuracy': statistics.mean(all_token_val_accuracies),
-            'average_first_token_val_accuracy': statistics.mean(first_token_val_accuracies),
+            'training_ds_fpath': train_ds,
+            'first_token_val_accuracy': history['val_accuracy_1st_token'],
+            'all_token_val_accuracy': history['val_accuracy_all_tokens'],
         }
     )
