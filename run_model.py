@@ -265,7 +265,8 @@ if __name__ == '__main__':
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
-    wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", tags=["rev-12", "gypsum", "amzn-ds"])
+    wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", tags=["rev-12", "gypsum", "amzn-ds"],
+               settings=wandb.Settings(start_method="fork"))
     config = wandb.config
 
     training_ds_fpath = AMZN_TRAINING_DATASETS.format(config.training_ds_number)
