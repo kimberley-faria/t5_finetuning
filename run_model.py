@@ -1,13 +1,12 @@
 import glob
 import logging
 import os
-import re
 import sys
-import textwrap
+import statistics
 
 import tensorflow as tf
 import wandb
-from transformers import TFT5ForConditionalGeneration, AutoTokenizer
+from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
 from config import SETTINGS
 
@@ -21,63 +20,23 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def _build(pos_files, neg_files, tokenizer, max_len=512):
-    pos_inputs, pos_targets = _buil_examples_from_files(pos_files, 'positive', tokenizer, max_len=max_len)
-    neg_inputs, neg_targets = _buil_examples_from_files(neg_files, 'negative', tokenizer, max_len=max_len)
-    logger.info("Return all inputs and targets")
-    return pos_inputs + neg_inputs, pos_targets + neg_targets
+def get_dataset_from_tf_records(fname, seq_length=128):
+    name_to_features = {
+        # "unique_ids": tf.FixedLenFeature([], tf.int64),
+        "input_ids": tf.io.FixedLenFeature([seq_length], tf.int64),
+        "input_mask": tf.io.FixedLenFeature([seq_length], tf.int64),
+        "segment_ids": tf.io.FixedLenFeature([seq_length], tf.int64),
+        "label_ids": tf.io.FixedLenFeature([], tf.int64),
+    }
 
+    def _decode_record(record, name_to_features):
+        '''Decodes a record to a TensorFlow example.'''
+        example = tf.io.parse_single_example(serialized=record, features=name_to_features)
+        return example
 
-def _buil_examples_from_files(files, sentiment, tokenizer, max_len=512):
-    inputs = []
-    targets = []
-
-    REPLACE_NO_SPACE = re.compile("[.;:!\'?,\"()\[\]]")
-    REPLACE_WITH_SPACE = re.compile("(<br\s*/><br\s*/>)|(\-)|(\/)")
-
-    for i, path in enumerate(files):
-        with open(path, 'r', encoding="utf8") as f:
-            text = f.read()
-
-        line = text.strip()
-        line = REPLACE_NO_SPACE.sub("", line)
-        line = REPLACE_WITH_SPACE.sub("", line)
-        line = f"{line}"
-        target = f"{sentiment}"
-
-        # tokenize inputs
-        tokenized_inputs = tokenizer(
-            line, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
-        )
-        # tokenize targets
-        tokenized_targets = tokenizer(
-            target, max_length=2, padding='max_length', return_tensors="tf", truncation=True
-        )
-
-        inputs.append(tokenized_inputs)
-        targets.append(tokenized_targets)
-        logger.debug(f"Done processing file {i} of {len(files)} for label - {sentiment}")
-
-    logger.info(f"Return tokenized inputs and targets for label: {sentiment}")
-    return inputs, targets
-
-
-def get_dataset(tokenizer, type_path, max_len=512, subset=None):
-    logger.info(f"Get {type_path} dataset of size {subset} (If None, get entire dataset)")
-    data_dir = os.path.join(SETTINGS.get('data'), 'aclImdb')
-    pos_file_path = os.path.join(data_dir, type_path, 'pos')
-    neg_file_path = os.path.join(data_dir, type_path, 'neg')
-
-    pos_files = glob.glob("%s/*.txt" % pos_file_path)
-    neg_files = glob.glob("%s/*.txt" % neg_file_path)
-
-    if subset:
-        inputs, targets = _build(pos_files[:(subset // 2)], neg_files[:(subset // 2)], tokenizer, max_len=max_len)
-    else:
-        inputs, targets = _build(pos_files, neg_files, tokenizer, max_len=max_len)
-
-    logger.info(f"Process ids and masks for dataset: {type_path}")
-    return [get_ids_and_masks(inputs, targets, i) for i in range(len(inputs))]
+    dataset = tf.data.TFRecordDataset(fname).map(
+        lambda x: _decode_record(x, name_to_features))
+    return dataset
 
 
 def get_ids_and_masks(inputs, targets, index):
@@ -90,6 +49,32 @@ def get_ids_and_masks(inputs, targets, index):
 
     return {"input_ids": source_ids, "attention_mask": src_mask, "labels": target_ids,
             "decoder_attention_mask": target_mask}
+
+
+def t5_tokenized_examples(fname, max_len=128):
+    dataset = get_dataset_from_tf_records(fname)
+
+    bert_tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
+    tokenizer = AutoTokenizer.from_pretrained('t5-small')
+
+    inputs = []
+    targets = []
+
+    for data in dataset:
+        bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
+        label = "positive" if data['label_ids'] else "negative"
+
+        tokenized_inputs = tokenizer(
+            bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
+        )
+        tokenized_targets = tokenizer(
+            label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
+        )
+
+        inputs.append(tokenized_inputs)
+        targets.append(tokenized_targets)
+
+    return [get_ids_and_masks(inputs, targets, i) for i in range(len(inputs))]
 
 
 def to_tf_dataset(dataset):
@@ -249,20 +234,16 @@ class CustomCallback(tf.keras.callbacks.Callback):
         self.val_acc_1st_token = logs['accuracy_1st_token']
 
 
-def train_test_model():
+def train_test_model(training_ds_fpath, val_ds_fpath):
     optimizer = tf.keras.optimizers.Adam(config.lr)
-
-    tokenizer = AutoTokenizer.from_pretrained('t5-small')
 
     callbacks = [CustomCallback()]
 
-    # Test for 2, 4, 8, 16, 32, 64, etc.. till 20k
     tf_train_ds = to_tf_dataset(
-        get_dataset(tokenizer, 'train', max_len=config.encoder_max_len, subset=config.ntrain))
+        t5_tokenized_examples(training_ds_fpath, max_len=config.encoder_max_len))
 
-    # Always run on entire validation set (5000)
     tf_valid_ds = to_tf_dataset(
-        get_dataset(tokenizer, 'val', max_len=config.encoder_max_len, subset=config.nvalid))
+        t5_tokenized_examples(val_ds_fpath, max_len=config.encoder_max_len))
 
     train_ds = create_dataset(tf_train_ds, batch_size=config.batch_size, shuffling=True,
                               cache_path=None, buffer_size=2500)
@@ -273,55 +254,51 @@ def train_test_model():
 
     model.compile(optimizer=optimizer)
 
-    model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
-              validation_data=valid_ds, validation_batch_size=config.batch_size)
+    history = model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
+                        validation_data=valid_ds, validation_batch_size=config.batch_size)
 
     model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
 
-    # Few Predictions on Val Set
-
-    loader = tf_valid_ds.shuffle(25000).batch(32)
-    it = iter(loader)
-    batch = next(it)
-
-    outs = model.generate(input_ids=batch['input_ids'], attention_mask=batch['attention_mask'],
-                          max_length=config.encoder_max_len)
-
-    dec = [tokenizer.decode(ids, skip_special_tokens=True) for ids in outs]
-
-    texts = [tokenizer.decode(ids) for ids in batch['input_ids']]
-    targets = [tokenizer.decode(ids) for ids in batch['labels']]
-
-    for i in range(config.batch_size):
-        lines = textwrap.wrap("Review:\n%s\n" % texts[i], width=100)
-        print("\n".join(lines))
-        print("\nActual sentiment: %s" % targets[i])
-        print("\nPredicted sentiment: %s" % dec[i])
-        print(f"\nPredicted id: {outs[i]}")
-        print("=====================================================================\n")
-
-    # Evaluate on Test Dataset
-    if config.evaluate:
-        tf_test_ds = to_tf_dataset(
-            get_dataset(tokenizer, 'test', max_len=config.encoder_max_len))
-        test_ds = create_dataset(tf_test_ds, batch_size=config.batch_size, shuffling=True, cache_path=None)
-        model.evaluate(test_ds, callbacks=[CustomCallback(step='test')])
+    return history.history
 
 
 if __name__ == '__main__':
     hparams = {
         'batch_size': 2,
-        'encoder_max_len': 256,
-        'ntrain': 8,
-        'nvalid': 1000,
+        'encoder_max_len': 128,
         'lr': 0.001,
         'epochs': 1,
-        'evaluate': False
+        'training_ds_fpath': '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_train_?_4.tf_record',
+        'val_ds_fpath': '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_eval.tf_record'
     }
 
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
-    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}", tags=["rev-8", "gypsum"])
+    wandb.init(project='t5-finetuning', config=hparams, dir=f"{SETTINGS.get('data')}",
+               tags=["rev-10", "gypsum", "amzn-ds"])
     config = wandb.config
-    train_test_model()
+
+    first_token_val_accuracies = []
+    all_token_val_accuracies = []
+
+    for training_ds_fpath in glob.glob(config.training_ds_fpath):
+        history = train_test_model(training_ds_fpath, config.val_ds_fpath)
+        first_token_val_accuracies.append(history['val_accuracy_1st_token'])
+        all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
+        wandb.log(
+            {
+                'training_ds_fpath': training_ds_fpath,
+                'first_token_val_accuracy': history['val_accuracy_1st_token'],
+                'all_token_val_accuracy': history['val_accuracy_all_tokens'],
+            }
+        )
+    wandb.log(
+        {
+            'num_of_epochs': config.epochs,
+            'learning_rate': config.lr,
+            'training_ds': config.training_ds_fpath,
+            'average_all_token_val_accuracy': statistics.mean(all_token_val_accuracies),
+            'average_first_token_val_accuracy': statistics.mean(first_token_val_accuracies),
+        }
+    )
