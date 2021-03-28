@@ -263,29 +263,20 @@ def train_test_model(training_ds_fpath, val_ds_fpath):
 
 
 if __name__ == '__main__':
-    hparams = {
-        'batch_size': 2,
-        'encoder_max_len': 128,
-        'lr': 0.001,
-        'epochs': 1,
-        'training_ds_fpath': '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_train_?_4.tf_record',
-        'val_ds_fpath': '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_eval.tf_record'
-    }
 
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
     config = wandb.config
-    tfp = config.training_ds_fpath if config.training_ds_fpath else hparams['training_ds_fpath']
 
     first_token_val_accuracies = []
     all_token_val_accuracies = []
 
-    for training_ds_fpath in glob.glob(tfp):
+    for training_ds_fpath in glob.glob(config.training_ds_fpath):
         _, _, a = training_ds_fpath.partition("amazon_electronics_c_")
         train_ds = a.split(".")[0]
 
-        wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", config=hparams,
+        wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}",
                    tags=["rev-10", "gypsum", "amzn-ds", train_ds], reinit=True)
         history = train_test_model(training_ds_fpath, config.val_ds_fpath)
         first_token_val_accuracies.append(history['val_accuracy_1st_token'])
@@ -300,7 +291,7 @@ if __name__ == '__main__':
 
     logger.info(
         f"Number of Epochs: {config.epochs}, Learning Rate: {config.lr}, "
-        f"Train Dataset: {tfp.split('/')[-1].split('.')[0]}, "
+        f"Train Dataset: {config.training_ds_fpath.split('/')[-1].split('.')[0]}, "
         f"Average All Tokens Val. Acc.: {statistics.mean(all_token_val_accuracies)}, "
         f"Average First Token Val. Acc.: {statistics.mean(first_token_val_accuracies)}"
     )
