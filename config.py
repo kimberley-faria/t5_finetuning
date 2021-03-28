@@ -22,5 +22,5 @@ SETTINGS_DICT = {
 
 SETTINGS = SETTINGS_DICT.get(SYSTEM)
 
-AMZN_TRAINING_DATASETS = '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_train_{num}_4.tf_record'
+AMZN_TRAINING_DATASETS = '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_train_{}_4.tf_record'
 AMZN_VALIDATION_DATASET = '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_eval.tf_record'
