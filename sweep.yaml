@@ -1,0 +1,17 @@
+project: t5-finetuning
+entity: kfaria
+program: run_model.py
+method: grid
+parameters:
+  lr:
+    values: [0.001, 0.0001]
+  batch_size:
+    value: 2
+  encoder_max_len:
+    value: 128
+  epochs:
+    value: 5
+  training_ds_fpath:
+    value: '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_train_?_4.tf_record'
+  val_ds_fpath:
+    value: '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_eval.tf_record'
