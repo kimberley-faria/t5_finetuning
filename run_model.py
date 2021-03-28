@@ -268,7 +268,7 @@ if __name__ == '__main__':
         os.mkdir(SETTINGS.get('data'))
 
     wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}",
-               tags=["rev-10", "gypsum", "amzn-ds"])
+               tags=["rev-11", "gypsum", "amzn-ds"], reinit=True)
     config = wandb.config
 
     first_token_val_accuracies = []
