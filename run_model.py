@@ -6,7 +6,7 @@ import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS, AMZN_TRAINING_DATASETS
+from config import SETTINGS, AMZN_TRAINING_DATASETS, AMZN_VALIDATION_DATASET
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -276,7 +276,7 @@ if __name__ == '__main__':
     first_token_val_accuracies = []
     all_token_val_accuracies = []
 
-    history = train_test_model(training_ds_fpath, config.val_ds_fpath)
+    history = train_test_model(training_ds_fpath, AMZN_VALIDATION_DATASET)
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
     wandb.log(
