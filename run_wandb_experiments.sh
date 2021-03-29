@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH --partition=2080ti-short
+#SBATCH --partition=1080ti-short
 #SBATCH --gres=gpu:1
 #SBATCH --mem=40GB
 #SBATCH -d singleton
