@@ -270,7 +270,8 @@ if __name__ == '__main__':
                settings=wandb.Settings(start_method="fork"))
     config = wandb.config
 
-    training_ds_fpath = AMZN_TRAINING_DATASETS.format(config.training_ds_number)
+    training_ds_fpath = AMZN_TRAINING_DATASETS.format(dataset_number=config.training_ds_number,
+                                                      dataset_size=config.training_ds_size)
 
     _, _, a = training_ds_fpath.partition("amazon_electronics_c_")
     train_ds = a.split(".")[0]
