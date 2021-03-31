@@ -10,8 +10,8 @@ parameters:
   encoder_max_len:
     value: 128
   epochs:
-    values: [5]
+    values: [5, 10, 20, 30, 40, 50]
   training_ds_number:
-    values: [ 0 ]
+    values: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
   training_ds_size:
     values: [ 4, 8, 16, 32 ]
