@@ -4,6 +4,11 @@ Todo:
 
 Logging - write to sys.out -> redirect to out file in sbatch
 WandB
+
+Write an outfile mapping # of epoch and lr for each run
+consolidate the information after all the runs
+do this for every training batch set
+
 3 training datasets
 try the emotion dataset
 
