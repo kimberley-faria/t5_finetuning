@@ -297,5 +297,5 @@ if __name__ == '__main__':
         training_dataset: findings
     }
 
-    with open(f'{SETTINGS.get("root")}/experiment_logs/{training_dataset}.json', 'w') as fp:
+    with open(f'{SETTINGS.get("root")}/experiment_logs/{training_dataset}_{config.epochs}_{config.lr}.json', 'w') as fp:
         json.dump(experiment_output, fp)
