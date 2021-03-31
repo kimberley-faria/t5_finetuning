@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import sys
@@ -253,7 +254,7 @@ def train_test_model(training_ds_fpath, val_ds_fpath):
     model.compile(optimizer=optimizer)
 
     hist = model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
-                        validation_data=valid_ds, validation_batch_size=config.batch_size)
+                     validation_data=valid_ds, validation_batch_size=config.batch_size)
 
     model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
 
@@ -280,12 +281,20 @@ if __name__ == '__main__':
     history = train_test_model(training_ds_fpath, AMZN_VALIDATION_DATASET)
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
-    wandb.log(
-        {
-            'num_of_epochs': config.epochs,
-            'learning_rate': config.lr,
-            'training_ds_fpath': train_ds,
-            'first_token_val_accuracy': history['val_accuracy_1st_token'],
-            'all_token_val_accuracy': history['val_accuracy_all_tokens'],
-        }
-    )
+    findings = {
+        'num_of_epochs': config.epochs,
+        'learning_rate': config.lr,
+        'training_ds_fpath': train_ds,
+        'first_token_val_accuracy': history['val_accuracy_1st_token'],
+        'all_token_val_accuracy': history['val_accuracy_all_tokens'],
+    }
+    wandb.log(findings)
+
+    training_dataset = training_ds_fpath.split('.')[0].split("/")[-1]
+
+    experiment_output = {
+        training_dataset: findings
+    }
+
+    with open(f'{SETTINGS.get("root")}/experiment_logs/{training_dataset}.json', 'w') as fp:
+        json.dump(experiment_output, fp)
