@@ -2,7 +2,6 @@
 #SBATCH --partition=1080ti-long
 #SBATCH --gres=gpu:1
 #SBATCH --mem=40GB
-#SBATCH -d singleton
 
 export XDG_RUNTIME_DIR=""
 conda activate default
@@ -11,5 +10,5 @@ module list
 
 sweep_id=$1
 
-wandb agent --count 12 $sweep_id --project t5-finetuning --entity kfaria
+wandb agent --count 1 $sweep_id --project t5-finetuning --entity kfaria
 wandb sync --clean
