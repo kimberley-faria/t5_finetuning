@@ -5,7 +5,7 @@ SYSTEM = 'gypsum'
 SCRATCH_DIR = "/mnt/nfs/scratch1/kfaria"
 
 # For code, imp stuff, backed up
-WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria"
+WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria/t5_finetuning"
 
 SETTINGS_DICT = {
     # Unix-style
