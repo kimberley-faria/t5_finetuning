@@ -21,7 +21,7 @@ if __name__ == "__main__":
             for lr in learning_rate:
                 consolidated_acc = 0
                 exp_results = [js_r(
-                    f"{SETTINGS.get('root')}/experiment_logs/amazon_electronics_c_train_{ds_no}_{ds_size}_{epochs}_{learning_rate}.json")
+                    f"{SETTINGS.get('root')}/experiment_logs/amazon_electronics_c_train_{ds_no}_{ds_size}_{e}_{lr}.json")
                                for ds_no in training_ds_number]
                 exp_accs = [res["all_token_val_accuracy"][-1] for res in exp_results]
                 consolidated_results[(ds_size, e, lr)] = mean(exp_accs)
