@@ -13,7 +13,7 @@ if __name__ == "__main__":
     training_ds_size = [4, 8, 16, 32]
     training_ds_number = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     epochs = [5, 10, 20, 30, 40, 50]
-    learning_rate = [0.001, 0.0001, 0.0005, 0.00001]
+    learning_rate = [0.001, 0.0001, 0.0005, "1e-05"]
 
     consolidated_results = {}
     for ds_size in training_ds_size:
