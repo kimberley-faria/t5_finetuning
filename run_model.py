@@ -7,7 +7,7 @@ import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS, AMZN_TRAINING_DATASETS, AMZN_VALIDATION_DATASET
+from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, TRAINING_DATASET
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -270,16 +270,16 @@ if __name__ == '__main__':
                settings=wandb.Settings(start_method="fork"))
     config = wandb.config
 
-    training_ds_fpath = AMZN_TRAINING_DATASETS.format(dataset_number=config.training_ds_number,
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_number=config.training_ds_number,
                                                       dataset_size=config.training_ds_size)
 
-    _, _, a = training_ds_fpath.partition("amazon_electronics_c_")
+    _, _, a = training_ds_fpath.partition(f"{TRAINING_DATASET}")
     train_ds = a.split(".")[0]
 
     first_token_val_accuracies = []
     all_token_val_accuracies = []
 
-    history = train_test_model(training_ds_fpath, AMZN_VALIDATION_DATASET)
+    history = train_test_model(training_ds_fpath, VALIDATION_DATASET_FNAME)
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
     findings = {

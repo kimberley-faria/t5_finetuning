@@ -22,5 +22,11 @@ SETTINGS_DICT = {
 
 SETTINGS = SETTINGS_DICT.get(SYSTEM)
 
-AMZN_TRAINING_DATASETS = '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_train_{dataset_number}_{dataset_size}.tf_record'
-AMZN_VALIDATION_DATASET = '/mnt/nfs/scratch1/tbansal/fewshot/amazon_electronics_c_eval.tf_record'
+DATASET_NAME = "scitail"
+TRAINING_DATASET = {
+    "amazon": "amazon_electronics_c",
+    "scitail": "scitail_b"
+}.get(DATASET_NAME)
+
+TRAINING_DATASET_FNAME = '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train_{dataset_number}_{dataset_size}.tf_record'
+VALIDATION_DATASET_FNAME = '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_eval.tf_record'
