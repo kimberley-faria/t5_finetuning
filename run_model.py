@@ -270,7 +270,8 @@ if __name__ == '__main__':
                settings=wandb.Settings(start_method="fork"))
     config = wandb.config
 
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_number=config.training_ds_number,
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=TRAINING_DATASET,
+                                                      dataset_number=config.training_ds_number,
                                                       dataset_size=config.training_ds_size)
 
     _, _, a = training_ds_fpath.partition(f"{TRAINING_DATASET}")
