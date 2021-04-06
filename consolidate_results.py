@@ -25,7 +25,7 @@ if __name__ == "__main__":
                                    f"amazon_electronics_c_train_{ds_no}_{ds_size}"]
                                for ds_no in training_ds_number]
                 exp_accs = [res["all_token_val_accuracy"][-1] for res in exp_results]
-                consolidated_results[(ds_size, e, lr)] = mean(exp_accs)
+                consolidated_results[str((ds_size, e, lr))] = mean(exp_accs)
 
     with open(f'{SETTINGS.get("root")}/experiment_logs/consolidated_results.json', 'w') as fp:
         json.dump(consolidated_results, fp)
