@@ -15,7 +15,7 @@ if __name__ == "__main__":
     epochs = [5, 10, 20, 30, 40, 50]
     learning_rate = [0.001, 0.0001, 0.0005, "1e-05"]
 
-    consolidated_results = {}
+    consolidated_results = []
     for ds_size in training_ds_size:
         for e in epochs:
             for lr in learning_rate:
@@ -25,7 +25,12 @@ if __name__ == "__main__":
                                    f"amazon_electronics_c_train_{ds_no}_{ds_size}"]
                                for ds_no in training_ds_number]
                 exp_accs = [res["all_token_val_accuracy"][-1] for res in exp_results]
-                consolidated_results[str((ds_size, e, lr))] = mean(exp_accs)
+                consolidated_results.append({
+                    "training_dataset_size": ds_size,
+                    "epochs": e,
+                    "lr": lr,
+                    "avg_val_acc": mean(exp_accs)
+                })
 
     with open(f'{SETTINGS.get("root")}/experiment_logs/consolidated_results.json', 'w') as fp:
         json.dump(consolidated_results, fp)
