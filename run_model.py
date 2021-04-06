@@ -7,7 +7,7 @@ import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, TRAINING_DATASET
+from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -270,17 +270,17 @@ if __name__ == '__main__':
                settings=wandb.Settings(start_method="fork"))
     config = wandb.config
 
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=TRAINING_DATASET,
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=DATASET,
                                                       dataset_number=config.training_ds_number,
                                                       dataset_size=config.training_ds_size)
 
-    _, _, a = training_ds_fpath.partition(f"{TRAINING_DATASET}")
+    _, _, a = training_ds_fpath.partition(f"{DATASET}")
     train_ds = a.split(".")[0]
 
     first_token_val_accuracies = []
     all_token_val_accuracies = []
 
-    history = train_test_model(training_ds_fpath, VALIDATION_DATASET_FNAME)
+    history = train_test_model(training_ds_fpath, VALIDATION_DATASET_FNAME.format(dataset_name=DATASET))
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
     findings = {
@@ -298,5 +298,5 @@ if __name__ == '__main__':
         training_dataset: findings
     }
 
-    with open(f'{SETTINGS.get("root")}/experiment_logs/{TRAINING_DATASET}/{training_dataset}_{config.epochs}_{config.lr}.json', 'w') as fp:
+    with open(f'{SETTINGS.get("root")}/experiment_logs/{DATASET}/{training_dataset}_{config.epochs}_{config.lr}.json', 'w') as fp:
         json.dump(experiment_output, fp)

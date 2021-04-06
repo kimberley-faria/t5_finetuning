@@ -1,7 +1,7 @@
 import json
 from statistics import mean
 
-from config import SETTINGS, TRAINING_DATASET
+from config import SETTINGS, DATASET
 
 
 def js_r(filename):
@@ -21,8 +21,8 @@ if __name__ == "__main__":
             for lr in learning_rate:
                 consolidated_acc = 0
                 exp_results = [js_r(
-                    f"{SETTINGS.get('root')}/experiment_logs/{TRAINING_DATASET}_train_{ds_no}_{ds_size}_{e}_{lr}.json")[
-                                   f"{TRAINING_DATASET}_train_{ds_no}_{ds_size}"]
+                    f"{SETTINGS.get('root')}/experiment_logs/{DATASET}_train_{ds_no}_{ds_size}_{e}_{lr}.json")[
+                                   f"{DATASET}_train_{ds_no}_{ds_size}"]
                                for ds_no in training_ds_number]
                 exp_accs = [res["all_token_val_accuracy"][-1] for res in exp_results]
                 consolidated_results.append({
@@ -32,5 +32,5 @@ if __name__ == "__main__":
                     "avg_val_acc": mean(exp_accs)
                 })
 
-    with open(f'{SETTINGS.get("root")}/experiment_logs/consolidated_results_{TRAINING_DATASET}.json', 'w') as fp:
+    with open(f'{SETTINGS.get("root")}/experiment_logs/consolidated_results_{DATASET}.json', 'w') as fp:
         json.dump(consolidated_results, fp)

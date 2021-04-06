@@ -23,7 +23,7 @@ SETTINGS_DICT = {
 SETTINGS = SETTINGS_DICT.get(SYSTEM)
 
 DATASET_NAME = "scitail"
-TRAINING_DATASET = {
+DATASET = {
     "amazon": "amazon_electronics_c",
     "scitail": "scitail_b"
 }.get(DATASET_NAME)
