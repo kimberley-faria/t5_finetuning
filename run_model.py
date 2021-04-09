@@ -61,7 +61,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
-        label = "positive" if data['label_ids'] else "negative"
+        label = "entailed" if data['label_ids'] else "neutral"
 
         tokenized_inputs = tokenizer(
             bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
