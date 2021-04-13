@@ -204,14 +204,14 @@ class CustomCallback(tf.keras.callbacks.Callback):
         logger.debug(
             f"({self.train_batch}) End of batch {batch} of epoch {self.epoch} of train; got log keys: {list(logs.keys())}")
 
-        wandb.log(
-            {
-                'training_batch_accuracy_1st_token': logs['accuracy_1st_token'],
-                'training_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
-                'training_batch_loss': logs['loss'],
-                'train_batch': self.train_batch,
-            }
-        )
+        # wandb.log(
+        #     {
+        #         'training_batch_accuracy_1st_token': logs['accuracy_1st_token'],
+        #         'training_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
+        #         'training_batch_loss': logs['loss'],
+        #         'train_batch': self.train_batch,
+        #     }
+        # )
         self.train_batch += 1
 
     def on_test_batch_end(self, batch, logs=None):
@@ -220,14 +220,14 @@ class CustomCallback(tf.keras.callbacks.Callback):
         logger.debug(
             f"{self.validation_batch}) End of batch {batch} of epoch {self.epoch} of {step}; got log keys: {list(logs.keys())}")
 
-        wandb.log(
-            {
-                f'{step}_batch_accuracy_1st_token': logs['accuracy_1st_token'],
-                f'{step}_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
-                f'{step}_batch_loss': logs['loss'],
-                'val_batch': self.validation_batch,
-            }
-        )
+        # wandb.log(
+        #     {
+        #         f'{step}_batch_accuracy_1st_token': logs['accuracy_1st_token'],
+        #         f'{step}_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
+        #         f'{step}_batch_loss': logs['loss'],
+        #         'val_batch': self.validation_batch,
+        #     }
+        # )
         self.validation_batch += 1
         self.val_acc_all_tokens = logs['accuracy_all_tokens']
         self.val_acc_1st_token = logs['accuracy_1st_token']
@@ -283,11 +283,11 @@ if __name__ == '__main__':
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
     findings = {
-        'num_of_epochs': config.epochs,
-        'learning_rate': config.lr,
+        # 'num_of_epochs': config.epochs,
+        # 'learning_rate': config.lr,
         'training_ds_fpath': train_ds,
-        'first_token_val_accuracy': history['val_accuracy_1st_token'],
-        'all_token_val_accuracy': history['val_accuracy_all_tokens'],
+        # 'first_token_val_accuracy': history['val_accuracy_1st_token'],
+        # 'all_token_val_accuracy': history['val_accuracy_all_tokens'],
     }
     wandb.log(findings)
 
