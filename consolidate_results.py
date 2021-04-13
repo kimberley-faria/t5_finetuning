@@ -1,5 +1,5 @@
 import json
-from statistics import mean
+from statistics import mean, stdev
 
 from config import SETTINGS, DATASET
 
@@ -29,7 +29,8 @@ if __name__ == "__main__":
                     "training_dataset_size": ds_size,
                     "epochs": e,
                     "lr": lr,
-                    "avg_val_acc": mean(exp_accs)
+                    "avg_val_acc": mean(exp_accs),
+                    "sd": stdev(exp_accs)
                 })
 
     with open(f'{SETTINGS.get("root")}/experiment_logs/scitail_b/consolidated_results_{DATASET}.json', 'w') as fp:
