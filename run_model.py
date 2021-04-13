@@ -139,11 +139,6 @@ class FinetunedT5(TFT5ForConditionalGeneration):
             softmaxed_output = tf.nn.softmax(logits, axis=-1)
             y_pred = tf.argmax(softmaxed_output, axis=-1)
 
-            if DEBUG:
-                bert_tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
-                tf.print(bert_tokenizer.decode(y_pred[0]))
-                tf.print(bert_tokenizer.decode(y_pred[1]))
-
             y_no_eos = tf.gather(y, [0], axis=1)
             y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
 

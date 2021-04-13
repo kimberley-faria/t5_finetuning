@@ -30,5 +30,3 @@ DATASET = {
 
 TRAINING_DATASET_FNAME = '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train_{dataset_number}_{dataset_size}.tf_record'
 VALIDATION_DATASET_FNAME = '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_eval.tf_record'
-
-DEBUG = True
