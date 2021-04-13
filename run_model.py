@@ -138,6 +138,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
             logits = outputs[1]
             softmaxed_output = tf.nn.softmax(logits, axis=-1)
             y_pred = tf.argmax(softmaxed_output, axis=-1)
+            tf.print(y_pred)
             y_no_eos = tf.gather(y, [0], axis=1)
             y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
 
