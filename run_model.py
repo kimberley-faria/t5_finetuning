@@ -7,7 +7,7 @@ import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET
+from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET, DEBUG
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -138,7 +138,11 @@ class FinetunedT5(TFT5ForConditionalGeneration):
             logits = outputs[1]
             softmaxed_output = tf.nn.softmax(logits, axis=-1)
             y_pred = tf.argmax(softmaxed_output, axis=-1)
-            tf.print(y_pred)
+
+            if DEBUG:
+                bert_tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
+                tf.print([bert_tokenizer.decode(y_pred_) for y_pred_ in y_pred])
+
             y_no_eos = tf.gather(y, [0], axis=1)
             y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
 
