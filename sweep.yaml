@@ -6,7 +6,7 @@ parameters:
   lr:
     values: [ 0.001, 0.0001, 0.0005, 0.00001 ]
   batch_size:
-    value: 2
+    value: 4
   encoder_max_len:
     value: 128
   epochs:
