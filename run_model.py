@@ -285,13 +285,13 @@ if __name__ == '__main__':
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
     findings = {
-        # 'num_of_epochs': config.epochs,
-        # 'learning_rate': config.lr,
+        'num_of_epochs': config.epochs,
+        'learning_rate': config.lr,
         'training_ds_fpath': train_ds,
-        # 'first_token_val_accuracy': history['val_accuracy_1st_token'],
-        # 'all_token_val_accuracy': history['val_accuracy_all_tokens'],
+        'first_token_val_accuracy': history['val_accuracy_1st_token'],
+        'all_token_val_accuracy': history['val_accuracy_all_tokens'],
     }
-    wandb.log(findings)
+    # wandb.log(findings)
 
     training_dataset = training_ds_fpath.split('.')[0].split("/")[-1]
 
