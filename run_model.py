@@ -7,7 +7,7 @@ import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET, EVALUATION_METHOD
+from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET, EVALUATION_METHOD, SYSTEM
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -250,15 +250,20 @@ def run_model():
     global config, history
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
-    # hparams = {
-    #     'batch_size': 2,
-    #     'encoder_max_len': 128,
-    #     'lr': 0.00001,
-    #     'epochs': 1,
-    #     'training_ds_number': 0,
-    #     'training_ds_size': 4
-    # }
-    wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=[DATASET])
+
+    if SYSTEM == 'local':
+        hparams = {
+            'batch_size': 2,
+            'encoder_max_len': 128,
+            'lr': 0.00001,
+            'epochs': 1,
+            'training_ds_number': 0,
+            'training_ds_size': 4
+        }
+        wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=[DATASET, SYSTEM], config=hparams)
+    else:
+        wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=[DATASET, SYSTEM])
+
     config = wandb.config
     logger.info(
         f"DATASET: {DATASET}, EVALUATION_METHOD: {EVALUATION_METHOD}, DATASET #: {config.training_ds_number}, "
