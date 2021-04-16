@@ -205,14 +205,6 @@ class CustomCallback(tf.keras.callbacks.Callback):
         logger.debug(
             f"({self.train_batch}) End of batch {batch} of epoch {self.epoch} of train; got log keys: {list(logs.keys())}")
 
-        # wandb.log(
-        #     {
-        #         'training_batch_accuracy_1st_token': logs['accuracy_1st_token'],
-        #         'training_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
-        #         'training_batch_loss': logs['loss'],
-        #         'train_batch': self.train_batch,
-        #     }
-        # )
         self.train_batch += 1
 
     def on_test_batch_end(self, batch, logs=None):
@@ -221,14 +213,6 @@ class CustomCallback(tf.keras.callbacks.Callback):
         logger.debug(
             f"{self.validation_batch}) End of batch {batch} of epoch {self.epoch} of {step}; got log keys: {list(logs.keys())}")
 
-        # wandb.log(
-        #     {
-        #         f'{step}_batch_accuracy_1st_token': logs['accuracy_1st_token'],
-        #         f'{step}_batch_accuracy_all_tokens': logs['accuracy_all_tokens'],
-        #         f'{step}_batch_loss': logs['loss'],
-        #         'val_batch': self.validation_batch,
-        #     }
-        # )
         self.validation_batch += 1
         self.val_acc_all_tokens = logs['accuracy_all_tokens']
         self.val_acc_1st_token = logs['accuracy_1st_token']
@@ -262,11 +246,10 @@ def train_test_model(training_ds_fpath, val_ds_fpath):
     return hist.history
 
 
-if __name__ == '__main__':
-
+def run_model():
+    global config, history
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
-
     hparams = {
         'batch_size': 2,
         'encoder_max_len': 128,
@@ -275,20 +258,18 @@ if __name__ == '__main__':
         'training_ds_number': 0,
         'training_ds_size': 4
     }
-
     wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=["local-pc"], config=hparams)
     config = wandb.config
-
+    logger.info(
+        f"DATASET: {DATASET}, EVALUATION_METHOD: {EVALUATION_METHOD}, DATASET #: {config.training_ds_number}, "
+        f"DATASET_SIZE: {config.training_ds_size}, # of EPOCHS: {config.epochs}, LR: {config.lr}")
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=DATASET,
                                                       dataset_number=config.training_ds_number,
                                                       dataset_size=config.training_ds_size)
-
     _, _, a = training_ds_fpath.partition(f"{DATASET}")
     train_ds = a.split(".")[0]
-
     first_token_val_accuracies = []
     all_token_val_accuracies = []
-
     history = train_test_model(training_ds_fpath, VALIDATION_DATASET_FNAME.format(dataset_name=DATASET))
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
@@ -299,17 +280,19 @@ if __name__ == '__main__':
         'first_token_val_accuracy': history['val_accuracy_1st_token'],
         'all_token_val_accuracy': history['val_accuracy_all_tokens'],
     }
-    # wandb.log(findings)
-
+    wandb.log(findings)
     training_dataset = training_ds_fpath.split('.')[0].split("/")[-1]
-
     experiment_output = {
         training_dataset: findings
     }
-
     dataset_dir = f'{SETTINGS.get("root")}/experiment_logs/{DATASET}/{EVALUATION_METHOD}'
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
-
-    with open(f'{dataset_dir}/{training_dataset}_{config.epochs}_{config.lr}.json', 'w') as fp:
+    experiment_result = f'{dataset_dir}/{training_dataset}_{config.epochs}_{config.lr}.json'
+    with open(experiment_result, 'w') as fp:
         json.dump(experiment_output, fp)
+    logger.info(f"RUN COMPLETED! - Saved results of {training_dataset} to {experiment_result}")
+
+
+if __name__ == '__main__':
+    run_model()
