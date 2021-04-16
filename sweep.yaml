@@ -1,4 +1,4 @@
-project: t5-finetuning
+project: t5-baselines
 entity: kfaria
 program: run_model.py
 method: grid
