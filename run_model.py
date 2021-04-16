@@ -250,15 +250,15 @@ def run_model():
     global config, history
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
-    hparams = {
-        'batch_size': 2,
-        'encoder_max_len': 128,
-        'lr': 0.00001,
-        'epochs': 1,
-        'training_ds_number': 0,
-        'training_ds_size': 4
-    }
-    wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=["local-pc"], config=hparams)
+    # hparams = {
+    #     'batch_size': 2,
+    #     'encoder_max_len': 128,
+    #     'lr': 0.00001,
+    #     'epochs': 1,
+    #     'training_ds_number': 0,
+    #     'training_ds_size': 4
+    # }
+    wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=[DATASET])
     config = wandb.config
     logger.info(
         f"DATASET: {DATASET}, EVALUATION_METHOD: {EVALUATION_METHOD}, DATASET #: {config.training_ds_number}, "
