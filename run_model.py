@@ -280,7 +280,7 @@ def run_model():
         'first_token_val_accuracy': history['val_accuracy_1st_token'],
         'all_token_val_accuracy': history['val_accuracy_all_tokens'],
     }
-    wandb.log(findings)
+    # wandb.log(findings)
     training_dataset = training_ds_fpath.split('.')[0].split("/")[-1]
     experiment_output = {
         training_dataset: findings
