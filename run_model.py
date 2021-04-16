@@ -260,7 +260,7 @@ def run_model():
             'training_ds_number': 0,
             'training_ds_size': 4
         }
-        wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=[DATASET, SYSTEM], config=hparams)
+        wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", tags=[DATASET, SYSTEM], config=hparams)
     else:
         wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=[DATASET, SYSTEM])
 
