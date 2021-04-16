@@ -9,8 +9,8 @@ WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria/t5_finetuning"
 
 DATASET_DIR = '/mnt/nfs/scratch1/tbansal/fewshot'
 
-# DATASET_NAME = "amazon"
-DATASET_NAME = "scitail"
+DATASET_NAME = "amazon"
+# DATASET_NAME = "scitail"
 
 EVALUATION_METHOD = "pos_neg"
 

@@ -1,6 +1,8 @@
 from transformers import BertTokenizer, AutoTokenizer
 import tensorflow as tf
 
+from config import TRAINING_DATASET_FNAME, DATASET
+
 tokenizer2 = BertTokenizer.from_pretrained("bert-base-cased")  # Check this!!!
 tokenizer = AutoTokenizer.from_pretrained('t5-small')
 
@@ -64,6 +66,8 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    # record = r"C:\Users\faria\PycharmProjects\t5_finetuning\datasets\scitail\scitail_b_train_0_4.tf_record"
-    record = r"C:\Users\faria\PycharmProjects\t5_finetuning\datasets\amazon\amazon_electronics_c_train_0_4.tf_record"
-    t5_tokenized_examples(record)
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=DATASET,
+                                                      dataset_number=0,
+                                                      dataset_size=4)
+    _, _, a = training_ds_fpath.partition(f"{DATASET}")
+    t5_tokenized_examples(training_ds_fpath)
