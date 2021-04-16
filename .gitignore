@@ -137,3 +137,9 @@ wandb/
 
 #wandb logs
 data/wandb
+
+#slurm outputs
+slurm*.out
+
+experiment_logs
+datasets
