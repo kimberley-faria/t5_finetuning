@@ -7,7 +7,7 @@ import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET
+from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET, EVALUATION_METHOD
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -61,7 +61,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
-        label = "entailed" if data['label_ids'] else "neutral"
+        label = "positive" if data['label_ids'] else "negative"
 
         tokenized_inputs = tokenizer(
             bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
@@ -267,8 +267,16 @@ if __name__ == '__main__':
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
-    wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", tags=["rev-13", "gypsum", "scitail-ds"],
-               settings=wandb.Settings(start_method="fork"))
+    hparams = {
+        'batch_size': 2,
+        'encoder_max_len': 128,
+        'lr': 0.00001,
+        'epochs': 1,
+        'training_ds_number': 0,
+        'training_ds_size': 4
+    }
+
+    wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=["local-pc"], config=hparams)
     config = wandb.config
 
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=DATASET,
@@ -299,5 +307,9 @@ if __name__ == '__main__':
         training_dataset: findings
     }
 
-    with open(f'{SETTINGS.get("root")}/experiment_logs/{DATASET}/{training_dataset}_{config.epochs}_{config.lr}.json', 'w') as fp:
+    dataset_dir = f'{SETTINGS.get("root")}/experiment_logs/{DATASET}/{EVALUATION_METHOD}'
+    if not os.path.exists(dataset_dir):
+        os.makedirs(dataset_dir)
+
+    with open(f'{dataset_dir}/{training_dataset}_{config.epochs}_{config.lr}.json', 'w') as fp:
         json.dump(experiment_output, fp)

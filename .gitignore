@@ -140,3 +140,5 @@ data/wandb
 
 #slurm outputs
 slurm*.out
+
+experiment_logs
