@@ -1,4 +1,4 @@
-project: t5-baselines
+project: t5-finetuning
 entity: kfaria
 program: run_model.py
 method: grid
@@ -15,3 +15,5 @@ parameters:
     values: [ 0 ]
   training_ds_size:
     values: [ 4 ]
+  dataset:
+    values: [ 'amazon_electronics_c', 'scitail_b' ]

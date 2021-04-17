@@ -7,7 +7,7 @@ import tensorflow as tf
 import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
-from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, DATASET, EVALUATION_METHOD, SYSTEM
+from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, LABELS_TYPE, SYSTEM, WANDB_ENTITY
 
 logger = logging.getLogger('tensorflow')
 logger.setLevel(logging.INFO)
@@ -251,6 +251,12 @@ def run_model():
     if not os.path.exists(SETTINGS.get('data')):
         os.mkdir(SETTINGS.get('data'))
 
+    wandb_params = {
+        "project": f"{SETTINGS.get('project')}",
+        "dir": f"{SETTINGS.get('data')}",
+        "tags": [SYSTEM],
+    }
+
     if SYSTEM == 'local':
         hparams = {
             'batch_size': 2,
@@ -258,24 +264,31 @@ def run_model():
             'lr': 0.00001,
             'epochs': 1,
             'training_ds_number': 0,
-            'training_ds_size': 4
+            'training_ds_size': 4,
+            'dataset': 'amazon_electronics_c'
         }
-        wandb.init(project='t5-finetuning', dir=f"{SETTINGS.get('data')}", tags=[DATASET, SYSTEM], config=hparams)
-    else:
-        wandb.init(project='t5-baselines', dir=f"{SETTINGS.get('data')}", tags=[DATASET, SYSTEM])
+        wandb_params["config"] = hparams
 
+    wandb.init(**wandb_params)
     config = wandb.config
+    run = wandb.Api().run(
+        "{entity}/{project}/{run_id}".format(entity=WANDB_ENTITY, project=SETTINGS.get('project'), run_id=wandb.run.id))
+    run.tags.append(config.dataset)
+    run.update()
+
     logger.info(
-        f"DATASET: {DATASET}, EVALUATION_METHOD: {EVALUATION_METHOD}, DATASET #: {config.training_ds_number}, "
-        f"DATASET_SIZE: {config.training_ds_size}, # of EPOCHS: {config.epochs}, LR: {config.lr}")
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=DATASET,
+        f"RUN_ID: {wandb.run.id}, DATASET: {config.dataset}, LABELS_TYPE: {LABELS_TYPE}, "
+        f"DATASET #: {config.training_ds_number}, DATASET_SIZE: {config.training_ds_size}, "
+        f"# of EPOCHS: {config.epochs}, LR: {config.lr}")
+
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=config.dataset,
                                                       dataset_number=config.training_ds_number,
                                                       dataset_size=config.training_ds_size)
-    _, _, a = training_ds_fpath.partition(f"{DATASET}")
+    _, _, a = training_ds_fpath.partition(f"{config.dataset}")
     train_ds = a.split(".")[0]
     first_token_val_accuracies = []
     all_token_val_accuracies = []
-    history = train_test_model(training_ds_fpath, VALIDATION_DATASET_FNAME.format(dataset_name=DATASET))
+    history = train_test_model(training_ds_fpath, VALIDATION_DATASET_FNAME.format(dataset_name=config.dataset))
     first_token_val_accuracies.append(history['val_accuracy_1st_token'])
     all_token_val_accuracies.append(history['val_accuracy_all_tokens'])
     findings = {
@@ -285,18 +298,18 @@ def run_model():
         'first_token_val_accuracy': history['val_accuracy_1st_token'],
         'all_token_val_accuracy': history['val_accuracy_all_tokens'],
     }
-    # wandb.log(findings)
+    wandb.log(findings)
     training_dataset = training_ds_fpath.split('.')[0].split("/")[-1]
     experiment_output = {
         training_dataset: findings
     }
-    dataset_dir = f'{SETTINGS.get("root")}/experiment_logs/{DATASET}/{EVALUATION_METHOD}'
+    dataset_dir = f'{SETTINGS.get("root")}/experiment_logs/{config.dataset}/{LABELS_TYPE}'
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
     experiment_result = f'{dataset_dir}/{training_dataset}_{config.epochs}_{config.lr}.json'
     with open(experiment_result, 'w') as fp:
         json.dump(experiment_output, fp)
-    logger.info(f"RUN COMPLETED! - Saved results of {training_dataset} to {experiment_result}")
+    logger.info(f"RUN {wandb.run.id} COMPLETED! - Saved results of {training_dataset} to {experiment_result}")
 
 
 if __name__ == '__main__':

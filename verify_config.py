@@ -1,12 +1,12 @@
 import json
 
-from config import SYSTEM, DATASET, EVALUATION_METHOD, SETTINGS
+from config import SYSTEM, LABELS_TYPE, SETTINGS
 
 if __name__ == '__main__':
     print("****************************************************************************************************")
     settings_json = json.dumps(SETTINGS, indent=4)
     print(
-        f"\nConfig set to: \nSETTINGS: {settings_json}, \nSYSTEM: {SYSTEM}, \nDATASET: {DATASET}, \nEVAL_METHOD: {EVALUATION_METHOD}\n")
+        f"\nConfig set to: \nSETTINGS: {settings_json}, \nSYSTEM: {SYSTEM}, \nLABELS_TYPE: {LABELS_TYPE}\n")
 
     print("****************************************************************************************************")
     print("\nrun_wandb_experiments.sh contents:")
