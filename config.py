@@ -33,10 +33,25 @@ SETTINGS_DICT = {
 
 SETTINGS = SETTINGS_DICT.get(SYSTEM)
 
-DATASET = {
-    "amazon": "amazon_electronics_c",
-    "scitail": "scitail_b"
-}.get(DATASET_NAME)
+# DATASET = {
+#     "amazon": "amazon_electronics_c",
+#     "amazon_t": "amazon_electronics_t",
+#     "scitail": "scitail_b",
+#     "amazon_books_t": "amazon_books_t",
+#     "amazon_kitchen_t": "amazon_kitchen_t",
+#     "amazon_dvd_t": "amazon_dvd_t",
+#     "conll_c": "conll_c",
+#     "restaurant": "restaurant",
+#     "airline": "airline",
+#     "pa_bnew": "pa_bnew",
+#     "pb_bnew":"pb_bnew",
+#     "disaster_new": "disaster_new",
+#     "amazonr_electronics": "amazonr_electronics",
+#     "amazonr_books": "amazonr_books",
+#     "amazonr_kitchen": "amazonr_kitchen",
+#     "amazonr_dvd": "amazonr_dvd",
+#     "emotion_new": "emotion_new",
+# }.get(DATASET_NAME)
 
 TRAINING_DATASET_FNAME = SETTINGS.get('training_dataset')
 VALIDATION_DATASET_FNAME = SETTINGS.get('val_dataset')
