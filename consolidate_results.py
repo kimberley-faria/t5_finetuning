@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from statistics import mean, stdev
 
@@ -24,7 +25,8 @@ if __name__ == "__main__":
             for lr in learning_rate:
                 consolidated_acc = 0
                 exp_results = [js_r(
-                    f"{SETTINGS.get('root')}\\experiment_logs\\{training_dataset}\\{labels_type}\\{training_dataset}_train_{ds_no}_{ds_size}_{e}_{lr}.json")[
+                    os.path.join(f"{SETTINGS.get('root')}", "experiment_logs", training_dataset, labels_type,
+                                 f"{training_dataset}_train_{ds_no}_{ds_size}_{e}_{lr}.json"))[
                                    f"{training_dataset}_train_{ds_no}_{ds_size}"]
                                for ds_no in training_ds_number]
                 exp_accs = [res["all_token_val_accuracy"][-1] for res in exp_results]
@@ -36,5 +38,6 @@ if __name__ == "__main__":
                     "sd": stdev(exp_accs)
                 })
 
-    with open(f'{SETTINGS.get("root")}\\experiment_logs\\{training_dataset}\\{labels_type}\\consolidated_results_{training_dataset}.json', 'w') as fp:
+    with open(os.path.join(f'{SETTINGS.get("root")}', 'experiment_logs', training_dataset, labels_type,
+                           f'consolidated_results_{training_dataset}.json'), 'w') as fp:
         json.dump(consolidated_results, fp)
