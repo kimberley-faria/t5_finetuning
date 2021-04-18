@@ -17,6 +17,6 @@ parameters:
     values: [ 4 ]
   dataset:
     values: [ 'airline' ]
-command:
-  - C:\Users\faria\PycharmProjects\t5_finetuning\venv\Scripts\python.exe
-  - ${program}
+#command:
+#  - C:\Users\faria\PycharmProjects\t5_finetuning\venv\Scripts\python.exe
+#  - ${program}
