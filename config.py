@@ -1,5 +1,9 @@
+import os
+
 SYSTEM = 'gypsum'
 # SYSTEM = 'local'
+
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 WANDB_ENTITY = 'kfaria'
 
 # For data, not backed up
@@ -17,16 +21,20 @@ SETTINGS_DICT = {
     'gypsum': {
         'data': SCRATCH_DIR,
         'root': WORKING_DIR,
-        'training_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train_{dataset_number}_{dataset_size}.tf_record',
+        'training_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train_{dataset_number}_{'
+                            'dataset_size}.tf_record',
         'val_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_eval.tf_record',
         'project': 't5-baselines'
     },
     # Windows-style
     'local': {
-        'data': ".\\data",
-        'root': ".\\",
-        'training_dataset': 'C:/Users/faria/PycharmProjects/t5_finetuning/datasets/{dataset_name}/{dataset_name}_train_{dataset_number}_{dataset_size}.tf_record',
-        'val_dataset': 'C:/Users/faria/PycharmProjects/t5_finetuning/datasets/{dataset_name}/{dataset_name}_eval.tf_record',
+        'data': os.path.join(BASE_DIR, "data"),
+        'root': BASE_DIR,
+        'training_dataset': os.path.join(BASE_DIR,
+                                         "datasets\\{dataset_name}\\{dataset_name}_train_{dataset_number}_{"
+                                         "dataset_size}.tf_record"),
+        'val_dataset': os.path.join(BASE_DIR,
+                                    "datasets\\{dataset_name}\\{dataset_name}_eval.tf_record"),
         'project': 't5-finetuning'
     }
 }

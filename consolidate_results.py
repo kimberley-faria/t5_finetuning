@@ -1,7 +1,8 @@
 import json
+import sys
 from statistics import mean, stdev
 
-from config import SETTINGS, DATASET
+from config import SETTINGS
 
 
 def js_r(filename):
@@ -10,6 +11,8 @@ def js_r(filename):
 
 
 if __name__ == "__main__":
+    training_dataset = sys.argv[1]
+    labels_type = sys.argv[2]
     training_ds_size = [4, 8, 16, 32]
     training_ds_number = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     epochs = [5, 10, 20, 30, 40, 50]
@@ -21,8 +24,8 @@ if __name__ == "__main__":
             for lr in learning_rate:
                 consolidated_acc = 0
                 exp_results = [js_r(
-                    f"{SETTINGS.get('root')}/experiment_logs/scitail_b/{DATASET}_train_{ds_no}_{ds_size}_{e}_{lr}.json")[
-                                   f"{DATASET}_train_{ds_no}_{ds_size}"]
+                    f"{SETTINGS.get('root')}\\experiment_logs\\{training_dataset}\\{labels_type}\\{training_dataset}_train_{ds_no}_{ds_size}_{e}_{lr}.json")[
+                                   f"{training_dataset}_train_{ds_no}_{ds_size}"]
                                for ds_no in training_ds_number]
                 exp_accs = [res["all_token_val_accuracy"][-1] for res in exp_results]
                 consolidated_results.append({
@@ -33,5 +36,5 @@ if __name__ == "__main__":
                     "sd": stdev(exp_accs)
                 })
 
-    with open(f'{SETTINGS.get("root")}/experiment_logs/scitail_b/consolidated_results_{DATASET}.json', 'w') as fp:
+    with open(f'{SETTINGS.get("root")}\\experiment_logs\\{training_dataset}\\{labels_type}\\consolidated_results_{training_dataset}.json', 'w') as fp:
         json.dump(consolidated_results, fp)
