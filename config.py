@@ -24,7 +24,7 @@ SETTINGS_DICT = {
         'training_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train_{dataset_number}_{'
                             'dataset_size}.tf_record',
         'val_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_eval.tf_record',
-        'project': 't5-baselines'
+        'project': 't5-finetuning'
     },
     # Windows-style
     'local': {
