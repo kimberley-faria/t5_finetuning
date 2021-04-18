@@ -274,6 +274,7 @@ def run_model():
     run = wandb.Api().run(
         "{entity}/{project}/{run_id}".format(entity=WANDB_ENTITY, project=SETTINGS.get('project'), run_id=wandb.run.id))
     run.tags.append(config.dataset)
+    run.tags.append(LABELS_TYPE)
     run.update()
 
     logger.info(
