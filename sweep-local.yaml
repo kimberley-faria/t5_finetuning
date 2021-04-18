@@ -16,4 +16,7 @@ parameters:
   training_ds_size:
     values: [ 4 ]
   dataset:
-    values: [ 'scitail_b' ]
+    values: [ 'airline' ]
+command:
+  - C:\Users\faria\PycharmProjects\t5_finetuning\venv\Scripts\python.exe
+  - ${program}

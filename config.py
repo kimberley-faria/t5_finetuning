@@ -14,7 +14,7 @@ WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria/t5_finetuning"
 
 DATASET_DIR = '/mnt/nfs/scratch1/tbansal/fewshot'
 
-LABELS_TYPE = "entailment_swap"
+LABELS_TYPE = "sentiment"
 
 SETTINGS_DICT = {
     # Unix-style
@@ -24,7 +24,7 @@ SETTINGS_DICT = {
         'training_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train_{dataset_number}_{'
                             'dataset_size}.tf_record',
         'val_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_eval.tf_record',
-        'project': 't5-baselines'
+        'project': 't5-finetuning'
     },
     # Windows-style
     'local': {
@@ -43,9 +43,9 @@ SETTINGS = SETTINGS_DICT.get(SYSTEM)
 
 # DATASET = {
 #     "amazon": "amazon_electronics_c",
-#     "amazon_t": "amazon_electronics_t",
+#     "amazon_t": "amazon_electronics_t", 0 -> positive,  1 -> negative
 #     "scitail": "scitail_b",
-#     "amazon_books_t": "amazon_books_t",
+#     "amazon_books_t": "amazon_books_t", 0 -> positive,  1 -> negative
 #     "amazon_kitchen_t": "amazon_kitchen_t",
 #     "amazon_dvd_t": "amazon_dvd_t",
 #     "conll_c": "conll_c",

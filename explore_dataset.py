@@ -1,7 +1,7 @@
 from transformers import BertTokenizer, AutoTokenizer
 import tensorflow as tf
 
-from config import TRAINING_DATASET_FNAME, DATASET
+from config import VALIDATION_DATASET_FNAME
 
 tokenizer2 = BertTokenizer.from_pretrained("bert-base-cased")  # Check this!!!
 tokenizer = AutoTokenizer.from_pretrained('t5-small')
@@ -45,29 +45,32 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
-        print("*******************************************************************************************************")
         print(bert_decoded_input)
         print(data['label_ids'])
+        label = {
+            0: "negative",
+            1: "neutral",
+            2: "positive"
+        }.get(data['label_ids'].numpy())
+        print(label)
         print("*******************************************************************************************************")
 
-        label = "positive" if data['label_ids'] else "negative"
-
-        tokenized_inputs = tokenizer(
-            bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
-        )
-        tokenized_targets = tokenizer(
-            label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
-        )
-
-        inputs.append(tokenized_inputs)
-        targets.append(tokenized_targets)
+        #
+        # tokenized_inputs = tokenizer(
+        #     bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
+        # )
+        # tokenized_targets = tokenizer(
+        #     label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
+        # )
+        #
+        # inputs.append(tokenized_inputs)
+        # targets.append(tokenized_targets)
 
     return [get_ids_and_masks(inputs, targets, i) for i in range(len(inputs))]
 
 
 if __name__ == '__main__':
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=DATASET,
-                                                      dataset_number=0,
-                                                      dataset_size=4)
-    _, _, a = training_ds_fpath.partition(f"{DATASET}")
+    dataset = "airline"
+    training_ds_fpath = VALIDATION_DATASET_FNAME.format(dataset_name=dataset)
+    _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

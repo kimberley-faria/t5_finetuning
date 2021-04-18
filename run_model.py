@@ -61,7 +61,11 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
-        label = "neutral" if data['label_ids'] else "entailed"
+        label = {
+            0: "negative",
+            1: "neutral",
+            2: "positive"
+        }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(
             bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
@@ -150,6 +154,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         lr = self.optimizer._decayed_lr(tf.float32)
 
         self.loss_tracker.update_state(loss)
+        tf.print(y, y_pred)
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
         metrics = {m.name: m.result() for m in self.metrics}
