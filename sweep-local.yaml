@@ -1,4 +1,4 @@
-project: t5-finetuning
+project: t5-baselines
 entity: kfaria
 program: run_model.py
 method: grid
@@ -10,11 +10,11 @@ parameters:
   encoder_max_len:
     value: 128
   epochs:
-    values: [ 5 ]
+    values: [ 20 ]
   training_ds_number:
-    values: [ 0 ]
+    values: [ 7 ]
   training_ds_size:
-    values: [ 4 ]
+    values: [ 8 ]
   dataset:
     values: [ 'airline' ]
 #command:
