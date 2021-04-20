@@ -48,9 +48,10 @@ def t5_tokenized_examples(fname, max_len=128):
         print(bert_decoded_input)
         print(data['label_ids'])
         label = {
-            0: "negative",
-            1: "neutral",
-            2: "positive"
+            0: "Organization",
+            1: "Other",
+            2: "Person",
+            3: "Location"
         }.get(data['label_ids'].numpy())
         print(label)
         print("*******************************************************************************************************")
@@ -70,7 +71,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    dataset = "airline"
+    dataset = "conll_c"
     training_ds_fpath = VALIDATION_DATASET_FNAME.format(dataset_name=dataset)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

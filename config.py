@@ -14,7 +14,7 @@ WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria/t5_finetuning"
 
 DATASET_DIR = '/mnt/nfs/scratch1/tbansal/fewshot'
 
-LABELS_TYPE = "sentiment"
+LABELS_TYPE = "classification"
 
 SETTINGS_DICT = {
     # Unix-style
