@@ -10,11 +10,11 @@ parameters:
   encoder_max_len:
     value: 128
   epochs:
-    values: [ 20 ]
+    values: [ 1 ]
   training_ds_number:
-    values: [ 7 ]
+    values: [ 0 ]
   training_ds_size:
-    values: [ 8 ]
+    values: [ 4 ]
   dataset:
     values: [ 'airline' ]
 #command:
