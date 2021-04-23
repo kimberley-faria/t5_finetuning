@@ -16,4 +16,4 @@ parameters:
   training_ds_size:
     value: 32
   dataset:
-    values: [ 'amazon_electronics_t' ]
+    values: [ 'amazon_books_t' ]
