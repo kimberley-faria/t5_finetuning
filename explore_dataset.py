@@ -43,19 +43,20 @@ def t5_tokenized_examples(fname, max_len=128):
     inputs = []
     targets = []
 
+
+    count =0
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
         print(bert_decoded_input)
         print(data['label_ids'])
         label = {
-            0: "Organization",
-            1: "Other",
-            2: "Person",
-            3: "Location"
+            0: "negative",
+            1: "positive"
         }.get(data['label_ids'].numpy())
         print(label)
         print("*******************************************************************************************************")
-
+        count +=1
+    print("Dataset count:", count)
         #
         # tokenized_inputs = tokenizer(
         #     bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
@@ -71,7 +72,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    dataset = "conll_c"
+    dataset = "amazon_electronics_t"
     training_ds_fpath = VALIDATION_DATASET_FNAME.format(dataset_name=dataset)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
