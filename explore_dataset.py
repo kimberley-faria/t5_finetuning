@@ -45,18 +45,28 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
     count =0
+    count_labels = {
+        0: 0,
+        1: 0,
+        2: 0
+    }
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
-        print(bert_decoded_input)
-        print(data['label_ids'])
+
         label = {
             0: "negative",
-            1: "positive"
+            1: "neutral",
+            2: "positive"
         }.get(data['label_ids'].numpy())
-        print(label)
-        print("*******************************************************************************************************")
+        if count < 10:
+            print(bert_decoded_input)
+            print(data['label_ids'])
+            print(label)
+            print("*******************************************************************************************************")
         count +=1
+        count_labels[data['label_ids'].numpy()]+=1
     print("Dataset count:", count)
+    print("classes count:", count_labels)
         #
         # tokenized_inputs = tokenizer(
         #     bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
@@ -72,7 +82,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    dataset = "amazon_dvd_t"
+    dataset = "amazonr_electronics"
     training_ds_fpath = VALIDATION_DATASET_FNAME.format(dataset_name=dataset)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
