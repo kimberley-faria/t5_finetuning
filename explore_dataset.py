@@ -1,7 +1,7 @@
 from transformers import BertTokenizer, AutoTokenizer
 import tensorflow as tf
 
-from config import VALIDATION_DATASET_FNAME
+from config import TRAINING_DATASET_FNAME
 
 tokenizer2 = BertTokenizer.from_pretrained("bert-base-cased")  # Check this!!!
 tokenizer = AutoTokenizer.from_pretrained('t5-small')
@@ -58,7 +58,7 @@ def t5_tokenized_examples(fname, max_len=128):
             1: "neutral",
             2: "positive"
         }.get(data['label_ids'].numpy())
-        if count < 10:
+        if count < 20:
             print(bert_decoded_input)
             print(data['label_ids'])
             print(label)
@@ -82,7 +82,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    dataset = "amazonr_kitchen"
-    training_ds_fpath = VALIDATION_DATASET_FNAME.format(dataset_name=dataset)
+    dataset = "amazonr_books"
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

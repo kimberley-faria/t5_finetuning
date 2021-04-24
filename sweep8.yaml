@@ -16,4 +16,4 @@ parameters:
   training_ds_size:
     value: 8
   dataset:
-    values: [ 'amazonr_kitchen' ]
+    values: [ 'amazonr_books' ]
