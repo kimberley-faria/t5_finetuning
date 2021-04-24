@@ -1,5 +1,4 @@
 #!/bin/sh
-#SBATCH --partition=1080ti-long
 #SBATCH --gres=gpu:1
 #SBATCH --mem=20GB
 #SBATCH -o /mnt/nfs/scratch1/kfaria/slurm-output/slurm-%j.out
