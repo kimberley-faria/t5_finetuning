@@ -82,7 +82,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    dataset = "amazonr_electronics"
+    dataset = "amazonr_kitchen"
     training_ds_fpath = VALIDATION_DATASET_FNAME.format(dataset_name=dataset)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

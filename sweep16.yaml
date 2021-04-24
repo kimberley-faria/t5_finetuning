@@ -16,4 +16,4 @@ parameters:
   training_ds_size:
     value: 16
   dataset:
-    values: [ 'amazonr_electronics' ]
+    values: [ 'amazonr_kitchen' ]
