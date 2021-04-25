@@ -62,14 +62,19 @@ def t5_tokenized_examples(fname, max_len=128):
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
         label = {
-            0: "Amenity",
-            1: "Cuisine",
-            2: "Dish",
-            3: "Hours",
-            4: "Location",
-            5: "Price",
-            6: "Rating",
-            7: "Restaurant_Name"
+            0: "empty",
+            1: "sadness",
+            2: "enthusiasm",
+            3: "neutral",
+            4: "worry",
+            5: "love",
+            6: "happiness",
+            7: "hate",
+            8: "surprise",
+            9: "relief",
+            10: "anger",
+            11: "fun",
+            12: "boredom"
         }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(

@@ -49,14 +49,19 @@ def t5_tokenized_examples(fname, max_len=128):
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
 
         label = {
-            0: "Amenity",
-            1: "Cuisine",
-            2: "Dish",
-            3: "Hours",
-            4: "Location",
-            5: "Price",
-            6: "Rating",
-            7: "Restaurant_Name"
+            0: "empty",
+            1: "sadness",
+            2: "enthusiasm",
+            3: "neutral",
+            4: "worry",
+            5: "love",
+            6: "happiness",
+            7: "hate",
+            8: "surprise",
+            9: "relief",
+            10: "anger",
+            11: "fun",
+            12: "boredom"
         }.get(data['label_ids'].numpy())
 
         print(bert_decoded_input)
@@ -66,7 +71,7 @@ def t5_tokenized_examples(fname, max_len=128):
             "*******************************************************************************************************")
         count += 1
         if data['label_ids'].numpy() not in count_labels:
-            count_labels[data['label_ids'].numpy()] = 1
+            count_labels[data['label_ids'].numpy()] = 0
         count_labels[data['label_ids'].numpy()] += 1
     print("Dataset count:", count)
     print("classes count:", count_labels)
@@ -85,7 +90,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    dataset = "restaurant"
+    dataset = "emotion_new"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
