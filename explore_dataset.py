@@ -49,19 +49,8 @@ def t5_tokenized_examples(fname, max_len=128):
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
 
         label = {
-            0: "empty",
-            1: "sadness",
-            2: "enthusiasm",
-            3: "neutral",
-            4: "worry",
-            5: "love",
-            6: "happiness",
-            7: "hate",
-            8: "surprise",
-            9: "relief",
-            10: "anger",
-            11: "fun",
-            12: "boredom"
+            0: "Relevant",
+            1: "Not Relevant",
         }.get(data['label_ids'].numpy())
 
         print(bert_decoded_input)
@@ -90,7 +79,7 @@ def t5_tokenized_examples(fname, max_len=128):
 
 
 if __name__ == '__main__':
-    dataset = "emotion_new"
+    dataset = "disaster_new"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
