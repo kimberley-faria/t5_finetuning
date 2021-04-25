@@ -43,46 +43,49 @@ def t5_tokenized_examples(fname, max_len=128):
     inputs = []
     targets = []
 
-
-    count =0
-    count_labels = {
-        0: 0,
-        1: 0,
-        2: 0
-    }
+    count = 0
+    count_labels = {}
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
 
         label = {
-            0: "negative",
-            1: "neutral",
-            2: "positive"
+            0: "Amenity",
+            1: "Cuisine",
+            2: "Dish",
+            3: "Hours",
+            4: "Location",
+            5: "Price",
+            6: "Rating",
+            7: "Restaurant_Name"
         }.get(data['label_ids'].numpy())
-        if count < 20:
-            print(bert_decoded_input)
-            print(data['label_ids'])
-            print(label)
-            print("*******************************************************************************************************")
-        count +=1
-        count_labels[data['label_ids'].numpy()]+=1
+
+        print(bert_decoded_input)
+        print(data['label_ids'])
+        print(label)
+        print(
+            "*******************************************************************************************************")
+        count += 1
+        if data['label_ids'].numpy() not in count_labels:
+            count_labels[data['label_ids'].numpy()] = 1
+        count_labels[data['label_ids'].numpy()] += 1
     print("Dataset count:", count)
     print("classes count:", count_labels)
-        #
-        # tokenized_inputs = tokenizer(
-        #     bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
-        # )
-        # tokenized_targets = tokenizer(
-        #     label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
-        # )
-        #
-        # inputs.append(tokenized_inputs)
-        # targets.append(tokenized_targets)
+    #
+    # tokenized_inputs = tokenizer(
+    #     bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
+    # )
+    # tokenized_targets = tokenizer(
+    #     label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
+    # )
+    #
+    # inputs.append(tokenized_inputs)
+    # targets.append(tokenized_targets)
 
-    return [get_ids_and_masks(inputs, targets, i) for i in range(len(inputs))]
+    # return [get_ids_and_masks(inputs, targets, i) for i in range(len(inputs))]
 
 
 if __name__ == '__main__':
-    dataset = "amazonr_dvd"
+    dataset = "restaurant"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
