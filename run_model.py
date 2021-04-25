@@ -62,8 +62,8 @@ def t5_tokenized_examples(fname, max_len=128):
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
         label = {
-            0: "national",
-            1: "constituency",
+            0: "neutral",
+            1: "partisan",
         }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(

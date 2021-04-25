@@ -16,4 +16,4 @@ parameters:
   training_ds_size:
     value: 4
   dataset:
-    values: [ 'pa_bnew' ]
+    values: [ 'pb_bnew' ]
