@@ -25,7 +25,7 @@ if __name__ == "__main__":
             for lr in learning_rate:
                 consolidated_acc = 0
                 exp_results = [js_r(
-                    os.path.join(f"{SETTINGS.get('root')}", "experiment_logs", training_dataset, labels_type,
+                    os.path.join(f"{SETTINGS.get('root')}", "experiment_logs2", training_dataset, labels_type,
                                  f"{training_dataset}_train_{ds_no}_{ds_size}_{e}_{lr}.json"))[
                                    f"{training_dataset}_train_{ds_no}_{ds_size}"]
                                for ds_no in training_ds_number]
@@ -38,6 +38,6 @@ if __name__ == "__main__":
                     "sd": stdev(exp_accs)
                 })
 
-    with open(os.path.join(f'{SETTINGS.get("root")}', 'experiment_logs', training_dataset, labels_type,
+    with open(os.path.join(f'{SETTINGS.get("root")}', 'experiment_logs2', training_dataset, labels_type,
                            f'consolidated_results_{training_dataset}.json'), 'w') as fp:
         json.dump(consolidated_results, fp)

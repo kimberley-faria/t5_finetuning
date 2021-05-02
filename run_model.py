@@ -313,7 +313,7 @@ def run_model():
     experiment_output = {
         training_dataset: findings
     }
-    dataset_dir = f'{SETTINGS.get("root")}/experiment_logs/{config.dataset}/{LABELS_TYPE}'
+    dataset_dir = f'{SETTINGS.get("root")}/experiment_logs2/{config.dataset}/{LABELS_TYPE}'
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
     experiment_result = f'{dataset_dir}/{training_dataset}_{config.epochs}_{config.lr}.json'

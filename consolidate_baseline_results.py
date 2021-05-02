@@ -36,8 +36,8 @@ if __name__ == "__main__":
 
     }
 
-    experiment_logs = r"C:\Users\faria\PycharmProjects\t5_finetuning\t5_baseline_results\experiment_logs"
-    base_name, dataset_dirs, _ = next(os.walk(experiment_logs))
+    experiment_logs2 = r"C:\Users\faria\PycharmProjects\t5_finetuning\t5_baseline_results\experiment_logs2"
+    base_name, dataset_dirs, _ = next(os.walk(experiment_logs2))
     consolidated_results = {}
     for dataset_dir in dataset_dirs:
         print(f"Consolidating {dataset_dir}...")
@@ -81,7 +81,7 @@ if __name__ == "__main__":
                     results_dict["labels"] = os.path.basename(root)
                 consolidated_results[dataset_dir].append(results_dict)
 
-    final_results_file = os.path.join(f'{SETTINGS.get("root")}', 'experiment_logs', f'consolidated_baselines.json')
+    final_results_file = os.path.join(f'{SETTINGS.get("root")}', 'experiment_logs2', f'consolidated_baselines.json')
     with open(final_results_file, 'w') as fp:
         json.dump(consolidated_results, fp)
     print(f"written results to {final_results_file}.")
