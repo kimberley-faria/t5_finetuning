@@ -50,6 +50,9 @@ def get_ids_and_masks(inputs, targets, index):
             "decoder_attention_mask": target_mask}
 
 
+def clean_data(data: str):
+    return data.replace("[CLS]", "").replace("[SEP]", "").replace("[PAD]", "").strip()
+
 def t5_tokenized_examples(fname, max_len=128):
     dataset = get_dataset_from_tf_records(fname)
 
@@ -61,13 +64,15 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
+        input_text = clean_data(bert_decoded_input)
+
         label = {
-            0: "neutral",
-            1: "partisan",
+            0: "positive",
+            1: "negative",
         }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(
-            bert_decoded_input, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
+            input_text, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
         )
         tokenized_targets = tokenizer(
             label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
