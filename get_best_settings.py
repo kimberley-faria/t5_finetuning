@@ -8,8 +8,8 @@ def js_r(filename):
 
 if __name__ == "__main__":
     results = js_r(
-        r"C:\Users\faria\PycharmProjects\t5_finetuning\experiment_logs"
-        r"\consolidated_results_amazon_electronics_c_scitail_b_pos_neg.json")
+        r"C:\Users\faria\PycharmProjects\t5_finetuning\experiment_logs2"
+        r"\consolidated_results_amazon_electronics_c_scitail_b_sentiment.json")
 
     best = {}
 
@@ -26,3 +26,31 @@ if __name__ == "__main__":
     #         8: {'training_dataset_size': 8, 'epochs': 30, 'lr': 0.0005, 'avg_val_acc': 0.6687650725245475},
     #         16: {'training_dataset_size': 16, 'epochs': 40, 'lr': 0.0001, 'avg_val_acc': 0.6987329989671707},
     #         32: {'training_dataset_size': 32, 'epochs': 40, 'lr': 0.0001, 'avg_val_acc': 0.7477426558732987}}
+
+    # Best hparams after sending cleaned data to t5
+    # best = {
+    #     4: {
+    #         'training_dataset_size': 4,
+    #         'epochs': 30,
+    #         'lr': 0.001,
+    #         'avg_val_acc': 0.48933152854442596
+    #     },
+    #     8: {
+    #         'training_dataset_size': 8,
+    #         'epochs': 50,
+    #         'lr': 0.001,
+    #         'avg_val_acc': 0.5382036358118057
+    #     },
+    #     16: {
+    #         'training_dataset_size': 16,
+    #         'epochs': 30,
+    #         'lr': 0.001,
+    #         'avg_val_acc': 0.6219795137643813
+    #     },
+    #     32: {
+    #         'training_dataset_size': 32,
+    #         'epochs': 50,
+    #         'lr': 0.0001,
+    #         'avg_val_acc': 0.6620985358953476
+    #     }
+    # }
