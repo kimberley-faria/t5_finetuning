@@ -54,8 +54,8 @@ def t5_tokenized_examples(fname, max_len=256):
         input_text = clean_data(bert_decoded_input)
 
         label = {
-            0: "positive",
-            1: "negative",
+            0: "negative",
+            1: "positive",
         }.get(data['label_ids'].numpy())
 
         count += 1
@@ -89,7 +89,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "amazon_electronics_t"
+    dataset = "amazon_electronics_c"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
