@@ -142,4 +142,5 @@ data/wandb
 slurm*.out
 
 experiment_logs
+experiment_logs2
 datasets
