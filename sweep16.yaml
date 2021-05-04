@@ -4,13 +4,13 @@ program: run_model.py
 method: grid
 parameters:
   lr:
-    value: 0.001
+    value: 0.0001
   batch_size:
     value: 2
   encoder_max_len:
     value: 128
   epochs:
-    value: 30
+    value: 50
   training_ds_number:
     values: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
   training_ds_size:

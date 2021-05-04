@@ -21,13 +21,13 @@ if __name__ == "__main__":
         best[result['training_dataset_size']] = result
     print(best)
 
-    # Results:
+    # Results: (data was not cleaned)
     # best = {4: {'training_dataset_size': 4, 'epochs': 20, 'lr': 0.0005, 'avg_val_acc': 0.649075736105442},
     #         8: {'training_dataset_size': 8, 'epochs': 30, 'lr': 0.0005, 'avg_val_acc': 0.6687650725245475},
     #         16: {'training_dataset_size': 16, 'epochs': 40, 'lr': 0.0001, 'avg_val_acc': 0.6987329989671707},
     #         32: {'training_dataset_size': 32, 'epochs': 40, 'lr': 0.0001, 'avg_val_acc': 0.7477426558732987}}
 
-    # Best hparams after sending cleaned data to t5
+    # Best hparams after sending cleaned data to t5 ( sentiment swapped...wrong results )
     # best = {
     #     4: {
     #         'training_dataset_size': 4,
@@ -54,3 +54,31 @@ if __name__ == "__main__":
     #         'avg_val_acc': 0.6620985358953476
     #     }
     # }
+
+    # Results: cleaned data b4 sending to t5, correct labels
+    best = {
+        4: {
+            'training_dataset_size': 4,
+            'epochs': 20,
+            'lr': 0.0005,
+            'avg_val_acc': 0.6573010072112084
+        },
+        8: {
+            'training_dataset_size': 8,
+            'epochs': 50,
+            'lr': 0.0001,
+            'avg_val_acc': 0.6828017741441728
+        },
+        16: {
+            'training_dataset_size': 16,
+            'epochs': 50,
+            'lr': 0.0001,
+            'avg_val_acc': 0.7099632918834686
+        },
+        32: {
+            'training_dataset_size': 32,
+            'epochs': 50,
+            'lr': 0.0001,
+            'avg_val_acc': 0.7429242700338363
+        }
+    }

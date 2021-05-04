@@ -4,7 +4,7 @@ program: run_model.py
 method: grid
 parameters:
   lr:
-    value: 0.001
+    value: 0.0001
   batch_size:
     value: 2
   encoder_max_len:
