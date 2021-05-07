@@ -68,7 +68,8 @@ def t5_tokenized_examples(fname, max_len=128):
 
         label = {
             0: "negative",
-            1: "positive",
+            1: "neutral",
+            2: "positive",
         }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(
