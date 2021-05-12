@@ -53,11 +53,22 @@ def t5_tokenized_examples(fname, max_len=256):
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
         input_text = clean_data(bert_decoded_input)
 
+        # Restaurant
+        # label = {
+        #     0: "Amenity",
+        #     1: "Cuisine",
+        #     2: "Dish",
+        #     3: "Hours",
+        #     4: "Location",
+        #     5: "Price",
+        #     6: "Rating",
+        #     7: "Restaurant_Name"
+        # }.get(data['label_ids'].numpy())
+
         label = {
-            0: "Organization",
-            1: "Other",
-            2: "Person",
-            3: "Location"
+            0: "negative",
+            1: "neutral",
+            2: "positive"
         }.get(data['label_ids'].numpy())
 
         count += 1
@@ -91,7 +102,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "conll_c"
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
+    dataset = "airline"
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=1, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
