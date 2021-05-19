@@ -144,9 +144,13 @@ class MultipleTokensAccuracy(tf.keras.metrics.Metric):
 
     def update_state(self, y_true, y_pred, sample_weight=None):
         self.total_labels.assign_add(tf.cast(tf.shape(y_pred)[0], 'float32'))
+        tf.print(y_true)
+        tf.print(y_pred)
+
 
         ones = tf.ones(tf.shape(y_true))
         lengths = tf.cast(tf.add(tf.argmax(tf.equal(ones, tf.cast(y_true, tf.float32)), axis=-1), 1), tf.int32)
+        tf.print(lengths)
         i = tf.constant(0)
 
         def cond(i):
@@ -157,6 +161,8 @@ class MultipleTokensAccuracy(tf.keras.metrics.Metric):
                 tf.equal(tf.cast(y_true[i, :lengths[i]], tf.int32), tf.cast(y_pred[i, :lengths[i]], tf.int32))),
                 'float32'))
             return tf.add(i, 1)
+
+        tf.print(self.correct_labels)
 
         r = tf.while_loop(cond, body, [i])
 
@@ -310,10 +316,10 @@ def run_model():
             'batch_size': 2,
             'encoder_max_len': 128,
             'lr': 0.00001,
-            'epochs': 1,
+            'epochs': 5,
             'training_ds_number': 0,
             'training_ds_size': 4,
-            'dataset': 'amazon_electronics_c'
+            'dataset': 'restaurant'
         }
         wandb_params["config"] = hparams
 
