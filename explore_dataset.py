@@ -54,28 +54,28 @@ def t5_tokenized_examples(fname, max_len=256):
         input_text = clean_data(bert_decoded_input)
 
         # Restaurant
-        # label = {
-        #     0: "Amenity",
-        #     1: "Cuisine",
-        #     2: "Dish",
-        #     3: "Hours",
-        #     4: "Location",
-        #     5: "Price",
-        #     6: "Rating",
-        #     7: "Restaurant_Name"
-        # }.get(data['label_ids'].numpy())
-
         label = {
-            0: "Relevant",
-            1: "Not Relevant"
+            0: "Amenity",
+            1: "Cuisine",
+            2: "Dish",
+            3: "Hours",
+            4: "Location",
+            5: "Price",
+            6: "Rating",
+            7: "Restaurant_Name"
         }.get(data['label_ids'].numpy())
+
+        # label = {
+        #     0: "Relevant",
+        #     1: "Not Relevant"
+        # }.get(data['label_ids'].numpy())
 
         count += 1
         if data['label_ids'].numpy() not in count_labels:
             count_labels[data['label_ids'].numpy()] = 0
         count_labels[data['label_ids'].numpy()] += 1
 
-        print("Cleaned input:", input_text)
+        # print("Cleaned input:", input_text)
         print("Target:", label)
 
         tokenized_inputs = tokenizer(
@@ -85,8 +85,8 @@ def t5_tokenized_examples(fname, max_len=256):
             label, max_length=5, padding='max_length', return_tensors="tf", truncation=True
         )
 
-        print("T5 decoded input:", tokenizer.decode(tokenized_inputs['input_ids'][0]))
-        print("T5 decoded target", tokenizer.decode(tokenized_targets['input_ids'][0]))
+        # print("T5 decoded input:", tokenizer.decode(tokenized_inputs['input_ids'][0]))
+        # print("T5 decoded target", tokenizer.decode(tokenized_targets['input_ids'][0]))
         print("Target idx:", tokenized_targets['input_ids'][0])
 
         inputs.append(tokenized_inputs)
@@ -101,7 +101,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "airline"
+    dataset = "restaurant"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=1, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

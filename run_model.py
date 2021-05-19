@@ -67,8 +67,14 @@ def t5_tokenized_examples(fname, max_len=128):
         input_text = clean_data(bert_decoded_input)
 
         label = {
-            0: "Relevant",
-            1: "Not Relevant"
+            0: "Amenity",
+            1: "Cuisine",
+            2: "Dish",
+            3: "Hours",
+            4: "Location",
+            5: "Price",
+            6: "Rating",
+            7: "Restaurant_Name"
         }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(
