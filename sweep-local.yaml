@@ -16,7 +16,7 @@ parameters:
   training_ds_size:
     values: [ 4 ]
   dataset:
-    values: [ 'conll_c' ]
+    values: [ 'disaster_new' ]
 #command:
 #  - C:\Users\faria\PycharmProjects\t5_finetuning\venv\Scripts\python.exe
 #  - ${program}

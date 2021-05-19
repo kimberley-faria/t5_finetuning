@@ -66,9 +66,8 @@ def t5_tokenized_examples(fname, max_len=256):
         # }.get(data['label_ids'].numpy())
 
         label = {
-            0: "negative",
-            1: "neutral",
-            2: "positive"
+            0: "Relevant",
+            1: "Not Relevant"
         }.get(data['label_ids'].numpy())
 
         count += 1

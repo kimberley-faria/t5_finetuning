@@ -67,16 +67,15 @@ def t5_tokenized_examples(fname, max_len=128):
         input_text = clean_data(bert_decoded_input)
 
         label = {
-            0: "negative",
-            1: "neutral",
-            2: "positive"
+            0: "Relevant",
+            1: "Not Relevant"
         }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(
             input_text, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
         )
         tokenized_targets = tokenizer(
-            label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
+            label, max_length=5, padding='max_length', return_tensors="tf", truncation=True
         )
 
         inputs.append(tokenized_inputs)
@@ -130,12 +129,47 @@ class AllTokensAccuracy(tf.keras.metrics.Metric):
         self.correct_labels.assign(0.)
 
 
+class MultipleTokensAccuracy(tf.keras.metrics.Metric):
+
+    def __init__(self, name='custom_accuracy', **kwargs):
+        super(MultipleTokensAccuracy, self).__init__(name=name, **kwargs)
+        self.total_labels = self.add_weight(name='total', initializer='zeros')
+        self.correct_labels = self.add_weight(name='correct', initializer='zeros')
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        self.total_labels.assign_add(tf.cast(tf.shape(y_pred)[0], 'float32'))
+
+        ones = tf.ones(tf.shape(y_true))
+        lengths = tf.cast(tf.add(tf.argmax(tf.equal(ones, tf.cast(y_true, tf.float32)), axis=-1), 1), tf.int32)
+        i = tf.constant(0)
+
+        def cond(i):
+            return tf.less(i, 2)
+
+        def body(i):
+            self.correct_labels.assign_add(tf.cast(tf.math.reduce_all(
+                tf.equal(tf.cast(y_true[i, :lengths[i]], tf.int32), tf.cast(y_pred[i, :lengths[i]], tf.int32))),
+                'float32'))
+            return tf.add(i, 1)
+
+        r = tf.while_loop(cond, body, [i])
+
+    def result(self):
+        if tf.equal(self.total_labels, 0.0):
+            return 0.0
+        return tf.divide(self.correct_labels, self.total_labels)
+
+    def reset_states(self):
+        self.total_labels.assign(0.)
+        self.correct_labels.assign(0.)
+
+
 class FinetunedT5(TFT5ForConditionalGeneration):
     def __init__(self, *args, log_dir=None, cache_dir=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.loss_tracker = tf.keras.metrics.Mean(name='loss')
         self.accuracy_1st_token = tf.keras.metrics.Accuracy(name='accuracy_1st_token')
-        self.accuracy_all_tokens = AllTokensAccuracy(name='accuracy_all_tokens')
+        self.accuracy_all_tokens = MultipleTokensAccuracy(name='accuracy_all_tokens')
 
     @tf.function
     def train_step(self, data):
@@ -159,12 +193,10 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         lr = self.optimizer._decayed_lr(tf.float32)
 
         self.loss_tracker.update_state(loss)
-        tf.print(y, y_pred)
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
         metrics = {m.name: m.result() for m in self.metrics}
         metrics.update({'lr': lr})
-
         return metrics
 
     @tf.function
