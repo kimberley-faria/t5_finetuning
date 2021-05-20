@@ -144,17 +144,14 @@ class MultipleTokensAccuracy(tf.keras.metrics.Metric):
 
     def update_state(self, y_true, y_pred, sample_weight=None):
         self.total_labels.assign_add(tf.cast(tf.shape(y_pred)[0], 'float32'))
-        tf.print(y_true)
-        tf.print(y_pred)
-
 
         ones = tf.ones(tf.shape(y_true))
         lengths = tf.cast(tf.add(tf.argmax(tf.equal(ones, tf.cast(y_true, tf.float32)), axis=-1), 1), tf.int32)
-        tf.print(lengths)
+
         i = tf.constant(0)
 
         def cond(i):
-            return tf.less(i, 2)
+            return tf.less(i, tf.shape(lengths)[0])
 
         def body(i):
             self.correct_labels.assign_add(tf.cast(tf.math.reduce_all(
