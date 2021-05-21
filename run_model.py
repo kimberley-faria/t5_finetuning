@@ -53,6 +53,7 @@ def get_ids_and_masks(inputs, targets, index):
 def clean_data(data: str):
     return data.replace("[CLS]", "").replace("[SEP]", "").replace("[PAD]", "").strip()
 
+
 def t5_tokenized_examples(fname, max_len=128):
     dataset = get_dataset_from_tf_records(fname)
 
@@ -67,19 +68,8 @@ def t5_tokenized_examples(fname, max_len=128):
         input_text = clean_data(bert_decoded_input)
 
         label = {
-            0: "empty",
-            1: "sadness",
-            2: "enthusiasm",
-            3: "neutral",
-            4: "worry",
-            5: "love",
-            6: "happiness",
-            7: "hate",
-            8: "surprise",
-            9: "relief",
-            10: "anger",
-            11: "fun",
-            12: "boredom"
+            0: "national",
+            1: "constituency",
         }.get(data['label_ids'].numpy())
 
         tokenized_inputs = tokenizer(
@@ -164,7 +154,7 @@ class MultipleTokensAccuracy(tf.keras.metrics.Metric):
                 'float32'))
             return tf.add(i, 1)
 
-        tf.print(self.correct_labels)
+        # tf.print(self.correct_labels)
 
         r = tf.while_loop(cond, body, [i])
 
