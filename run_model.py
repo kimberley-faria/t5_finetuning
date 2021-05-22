@@ -4,9 +4,9 @@ import os
 import sys
 
 import tensorflow as tf
-import wandb
 from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
 
+import wandb
 from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, LABELS_TYPE, SYSTEM, WANDB_ENTITY
 
 logger = logging.getLogger('tensorflow')
@@ -69,14 +69,10 @@ def t5_tokenized_examples(fname, max_len=128):
         input_text = f"sentence: {bert_input_text}"
 
         target = {
-            0: 'Amenity',
-            1: 'Cuisine',
-            2: 'Dish',
-            3: 'Hours',
-            4: 'Location',
-            5: 'Price',
-            6: 'Rating',
-            7: 'Restaurant_Name'
+            0: "Organization",
+            1: "Other",
+            2: "Person",
+            3: "Location"
         }.get(data['label_ids'].numpy())
 
         label = f"entity: {target}"
