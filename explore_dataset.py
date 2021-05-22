@@ -55,8 +55,8 @@ def t5_tokenized_examples(fname, max_len=256):
 
         # Restaurant
         label = {
-            0: "national",
-            1: "constituency",
+            0: "neutral",
+            1: "partisan",
         }.get(data['label_ids'].numpy())
 
         # label = {
@@ -69,7 +69,7 @@ def t5_tokenized_examples(fname, max_len=256):
             count_labels[data['label_ids'].numpy()] = 0
         count_labels[data['label_ids'].numpy()] += 1
 
-        # print("Cleaned input:", input_text)
+        print("Cleaned input:", input_text)
         print("Target:", label)
 
         tokenized_inputs = tokenizer(
@@ -95,7 +95,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "pa_bnew"
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=1, dataset_size=4)
+    dataset = "pb_bnew"
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
