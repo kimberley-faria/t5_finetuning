@@ -53,10 +53,18 @@ def t5_tokenized_examples(fname, max_len=256):
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
         input_text = clean_data(bert_decoded_input)
 
+        print("Raw Target:", data['label_ids'].numpy())
         # Restaurant
         label = {
-            0: "neutral",
-            1: "partisan",
+            0: "policy",
+            1: "attack",
+            2: "support",
+            3: "information",
+            4: "mobilization",
+            5: "personal",
+            6: "other",
+            7: "media",
+            8: "constituency",
         }.get(data['label_ids'].numpy())
 
         # label = {
@@ -95,7 +103,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "pb_bnew"
+    dataset = "pm_bnew"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
