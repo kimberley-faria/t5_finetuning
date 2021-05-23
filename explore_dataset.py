@@ -51,20 +51,20 @@ def t5_tokenized_examples(fname, max_len=256):
     count_labels = {}
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
-        bert_input_text = clean_data(bert_decoded_input)
-        input_text = f"sentence: {bert_input_text}"
+        bert_input_text = clean_data(bert_decoded_input).split(".")
+        # input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
+        input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
+
 
         print("Raw Target:", data['label_ids'].numpy())
         # Restaurant
 
         target = {
-            0: "Organization",
-            1: "Other",
-            2: "Person",
-            3: "Location"
+            0: "neutral",
+            1: "entailed",
         }.get(data['label_ids'].numpy())
 
-        label = f"entity: {target}"
+        label = f"{target}"
 
         # label = {
         #     0: "Relevant",
@@ -86,8 +86,8 @@ def t5_tokenized_examples(fname, max_len=256):
             label, max_length=5, padding='max_length', return_tensors="tf", truncation=True
         )
 
-        # print("T5 decoded input:", tokenizer.decode(tokenized_inputs['input_ids'][0]))
-        # print("T5 decoded target", tokenizer.decode(tokenized_targets['input_ids'][0]))
+        print("T5 decoded input:", tokenizer.decode(tokenized_inputs['input_ids'][0]))
+        print("T5 decoded target", tokenizer.decode(tokenized_targets['input_ids'][0]))
         print("Target idx:", tokenized_targets['input_ids'][0])
 
         inputs.append(tokenized_inputs)
@@ -102,7 +102,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "conll_c"
+    dataset = "scitail_b"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=1, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)
