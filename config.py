@@ -14,7 +14,7 @@ WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria/t5_finetuning"
 
 DATASET_DIR = '/mnt/nfs/scratch1/tbansal/fewshot'
 
-LABELS_TYPE = "entailment_p_h"
+LABELS_TYPE = "entailment_s"
 
 SETTINGS_DICT = {
     # Unix-style
