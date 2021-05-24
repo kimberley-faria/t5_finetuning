@@ -65,22 +65,20 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
-        bert_input_text = clean_data(bert_decoded_input).split(".")
-        input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
-        # input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
+        input_text = clean_data(bert_decoded_input)
 
-        target = {
-            0: "neutral",
-            1: "entailed",
+        label = {
+            0: "negative",
+            1: "neutral",
+            2: "positive"
         }.get(data['label_ids'].numpy())
 
-        label = f"{target}"
 
         tokenized_inputs = tokenizer(
             input_text, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
         )
         tokenized_targets = tokenizer(
-            label, max_length=5, padding='max_length', return_tensors="tf", truncation=True
+            label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
         )
 
         inputs.append(tokenized_inputs)

@@ -51,25 +51,25 @@ def t5_tokenized_examples(fname, max_len=256):
     count_labels = {}
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
-        bert_input_text = clean_data(bert_decoded_input).split(".")
-        # input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
-        input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
+        input_text = clean_data(bert_decoded_input)
 
-
-        print("Raw Target:", data['label_ids'].numpy())
         # Restaurant
-
-        target = {
-            0: "neutral",
-            1: "entailed",
-        }.get(data['label_ids'].numpy())
-
-        label = f"{target}"
-
         # label = {
-        #     0: "Relevant",
-        #     1: "Not Relevant"
+        #     0: "Amenity",
+        #     1: "Cuisine",
+        #     2: "Dish",
+        #     3: "Hours",
+        #     4: "Location",
+        #     5: "Price",
+        #     6: "Rating",
+        #     7: "Restaurant_Name"
         # }.get(data['label_ids'].numpy())
+
+        label = {
+            0: "negative",
+            1: "neutral",
+            2: "positive"
+        }.get(data['label_ids'].numpy())
 
         count += 1
         if data['label_ids'].numpy() not in count_labels:
@@ -102,7 +102,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "scitail_b"
+    dataset = "airline"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=1, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

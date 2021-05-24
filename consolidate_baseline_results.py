@@ -22,21 +22,21 @@ if __name__ == "__main__":
             "lr": 0.0005
         },
         8: {
-            "epochs": 30,
-            "lr": 0.0005
+            "epochs": 50,
+            "lr": 0.0001
         },
         16: {
-            "epochs": 40,
+            "epochs": 50,
             "lr": 0.0001
         },
         32: {
-            "epochs": 40,
+            "epochs": 50,
             "lr": 0.0001
         },
 
     }
 
-    experiment_logs2 = r"C:\Users\faria\PycharmProjects\t5_finetuning\t5_baseline_results\experiment_logs2"
+    experiment_logs2 = r"C:\Users\faria\PycharmProjects\t5_finetuning\experiment_logs2"
     base_name, dataset_dirs, _ = next(os.walk(experiment_logs2))
     consolidated_results = {}
     for dataset_dir in dataset_dirs:
