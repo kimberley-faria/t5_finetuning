@@ -65,12 +65,12 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
-        input_text = clean_data(bert_decoded_input)
+        bert_input_text = clean_data(bert_decoded_input).split(".")
+        input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
 
         label = {
-            0: "negative",
-            1: "neutral",
-            2: "positive"
+            0: "not paraphrase",
+            1: "paraphrase",
         }.get(data['label_ids'].numpy())
 
 
