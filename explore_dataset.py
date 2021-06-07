@@ -38,7 +38,7 @@ def get_ids_and_masks(inputs, targets, index):
 
 
 def clean_data(data: str):
-    return data.replace("[CLS]", "").replace("[SEP]", "").replace("[PAD]", "").strip()
+    return data.replace("[CLS]", "").replace("[PAD]", "").strip()
 
 
 def t5_tokenized_examples(fname, max_len=256):
@@ -51,9 +51,11 @@ def t5_tokenized_examples(fname, max_len=256):
     count_labels = {}
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
-        bert_input_text = clean_data(bert_decoded_input).split(".")
-        input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
-        # input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
+        bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
+
+        input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
+
+
 
         # Restaurant
         # label = {
@@ -104,6 +106,6 @@ def t5_tokenized_examples(fname, max_len=256):
 
 if __name__ == '__main__':
     dataset = "rte"
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=8)
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=5, dataset_size=16)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

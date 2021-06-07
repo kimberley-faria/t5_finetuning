@@ -51,7 +51,7 @@ def get_ids_and_masks(inputs, targets, index):
 
 
 def clean_data(data: str):
-    return data.replace("[CLS]", "").replace("[SEP]", "").replace("[PAD]", "").strip()
+    return data.replace("[CLS]", "").replace("[PAD]", "").strip()
 
 
 def t5_tokenized_examples(fname, max_len=128):
@@ -65,12 +65,9 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
-        bert_input_text = clean_data(bert_decoded_input).split(".")
-        try:
-            input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
-        except:
-            bert_input_text = clean_data(bert_decoded_input).split("?")
-            input_text = f"Sentence 1: {bert_input_text[0].strip()}?\nSentence 2: {bert_input_text[1].strip()}?"
+        bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
+
+        input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
 
         label = {
             0: "neutral",
