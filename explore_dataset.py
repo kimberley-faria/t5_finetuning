@@ -68,8 +68,8 @@ def t5_tokenized_examples(fname, max_len=256):
         # }.get(data['label_ids'].numpy())
 
         label = {
-            0: "not paraphrase",
-            1: "paraphrase",
+            0: "neutral",
+            1: "entailed",
         }.get(data['label_ids'].numpy())
 
         count += 1
@@ -103,7 +103,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "mrpc"
+    dataset = "rte"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=8)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

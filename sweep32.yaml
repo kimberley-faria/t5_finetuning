@@ -16,4 +16,4 @@ parameters:
   training_ds_size:
     value: 32
   dataset:
-    values: [ 'mrpc' ]
+    values: [ 'rte' ]
