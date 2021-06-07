@@ -70,8 +70,8 @@ def t5_tokenized_examples(fname, max_len=128):
         input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
 
         label = {
-            0: "neutral",
-            1: "entailed",
+            0: "not paraphrase",
+            1: "paraphrase",
         }.get(data['label_ids'].numpy())
 
 
