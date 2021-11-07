@@ -1,0 +1,1 @@
+{"scitail_b_train_0_8": {"num_of_epochs": 5, "learning_rate": 0.0001, "training_ds_fpath": "_train_0_8", "first_token_val_accuracy": [0.0, 0.0, 0.0, 0.0363214835524559, 0.47527047991752625], "all_token_val_accuracy": [0.0, 0.0, 0.0, 0.0363214835524559, 0.47527047991752625]}}
