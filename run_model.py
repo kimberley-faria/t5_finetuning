@@ -202,7 +202,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         self.loss_tracker.update_state(loss)
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
-        metrics = {m.name: m.result() for m in self.metrics}
+        metrics = {m.name: m.data() for m in self.metrics}
         metrics.update({'lr': lr})
         return metrics
 
@@ -222,7 +222,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         self.loss_tracker.update_state(loss)
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
-        return {m.name: m.result() for m in self.metrics}
+        return {m.name: m.data() for m in self.metrics}
 
 
 class CustomCallback(tf.keras.callbacks.Callback):
