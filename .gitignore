@@ -141,6 +141,4 @@ data/wandb
 #slurm outputs
 slurm*.out
 
-experiment_logs
-experiment_logs2
 datasets
