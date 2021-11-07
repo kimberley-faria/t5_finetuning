@@ -1,7 +1,7 @@
 import os
 
-SYSTEM = 'gypsum'
-# SYSTEM = 'local'
+# SYSTEM = 'gypsum'
+SYSTEM = 'local'
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 WANDB_ENTITY = 'kfaria'
