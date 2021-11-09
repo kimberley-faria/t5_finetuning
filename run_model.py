@@ -51,7 +51,10 @@ def get_ids_and_masks(inputs, targets, index):
 
 
 def clean_data(data: str):
-    return data.replace("[CLS]", "").replace("[PAD]", "").strip()
+    # amazon
+    return data.replace("[CLS]", "").replace("[SEP]", "").replace("[PAD]", "").strip()
+    # mrpc, rte
+    # return data.replace("[CLS]", "").replace("[PAD]", "").strip()
 
 
 def t5_tokenized_examples(fname, max_len=128):
@@ -65,15 +68,29 @@ def t5_tokenized_examples(fname, max_len=128):
 
     for data in dataset:
         bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
-        bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
 
-        input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
+        # amazon
+        input_text = clean_data(bert_decoded_input)
 
+        # # mrpc
+        # bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
+        # input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
+
+        # # mrpc
+        # label = {
+        #     0: "not paraphrase",
+        #     1: "paraphrase",
+        # }.get(data['label_ids'].numpy())
+
+        # amazon_electronics_c
         label = {
-            0: "not paraphrase",
-            1: "paraphrase",
+            0: "negative",
+            1: "positive",
         }.get(data['label_ids'].numpy())
 
+        logger.info(f"********** Task **********")
+        logger.info(f"Input: {input_text}")
+        logger.info(f"Label: {label}")
 
         tokenized_inputs = tokenizer(
             input_text, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
@@ -202,7 +219,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         self.loss_tracker.update_state(loss)
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
-        metrics = {m.name: m.data() for m in self.metrics}
+        metrics = {m.name: m.result() for m in self.metrics}
         metrics.update({'lr': lr})
         return metrics
 
@@ -222,7 +239,7 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         self.loss_tracker.update_state(loss)
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
-        return {m.name: m.data() for m in self.metrics}
+        return {m.name: m.result() for m in self.metrics}
 
 
 class CustomCallback(tf.keras.callbacks.Callback):
@@ -303,7 +320,7 @@ def run_model():
     wandb_params = {
         "project": f"{SETTINGS.get('project')}",
         "dir": f"{SETTINGS.get('data')}",
-        "tags": [SYSTEM],
+        "tags": [SYSTEM, "t5-base"],
     }
 
     if SYSTEM == 'local':
@@ -353,7 +370,7 @@ def run_model():
     experiment_output = {
         training_dataset: findings
     }
-    dataset_dir = f'{SETTINGS.get("root")}/experiment_logs2/{config.dataset}/{LABELS_TYPE}'
+    dataset_dir = f'{SETTINGS.get("root")}/experiment_logs3/{config.dataset}/{LABELS_TYPE}'
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
     experiment_result = f'{dataset_dir}/{training_dataset}_{config.epochs}_{config.lr}.json'

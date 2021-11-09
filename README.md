@@ -54,3 +54,6 @@ wandb sweep sweep.yaml
 
 sbatch run_wandb_experiments.sh 0cs77brz  
 > Submitted batch job 7397411  
+> 
+
+[comment]: <> (values: [ 'amazon_electronics_c', 'amazon_electronics_t', 'conll', 'airline', 'pb_new', 'scitail_b' ]&#41;)
