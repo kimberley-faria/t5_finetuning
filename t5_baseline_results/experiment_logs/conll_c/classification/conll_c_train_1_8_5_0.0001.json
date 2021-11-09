@@ -1,0 +1,1 @@
+{"conll_c_train_1_8": {"num_of_epochs": 5, "learning_rate": 0.0001, "training_ds_fpath": "_train_1_8", "first_token_val_accuracy": [0.0, 0.0, 0.02992209605872631, 0.2983357012271881, 0.2857648730278015], "all_token_val_accuracy": [0.0, 0.0, 0.02992209605872631, 0.2981586456298828, 0.2857648730278015]}}

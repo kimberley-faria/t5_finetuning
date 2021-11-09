@@ -58,7 +58,7 @@ def t5_tokenized_examples(fname, max_len=128):
     dataset = get_dataset_from_tf_records(fname)
 
     bert_tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
-    tokenizer = AutoTokenizer.from_pretrained('t5-small')
+    tokenizer = AutoTokenizer.from_pretrained('t5-base')
 
     inputs = []
     targets = []
@@ -283,7 +283,7 @@ def train_test_model(training_ds_fpath, val_ds_fpath):
     valid_ds = create_dataset(tf_valid_ds, batch_size=config.batch_size, shuffling=True,
                               cache_path=None, buffer_size=2500)
 
-    model = FinetunedT5.from_pretrained("t5-small")
+    model = FinetunedT5.from_pretrained("t5-base")
 
     model.compile(optimizer=optimizer)
 
