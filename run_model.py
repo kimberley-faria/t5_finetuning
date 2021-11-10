@@ -83,10 +83,19 @@ def t5_tokenized_examples(fname, max_len=128):
         # }.get(data['label_ids'].numpy())
 
         # amazon_electronics_c
+        # label = {
+        #     0: "negative",
+        #     1: "positive",
+        # }.get(data['label_ids'].numpy())
+
+        # conll
         label = {
-            0: "negative",
-            1: "positive",
+            0: "Organization",
+            1: "Other",
+            2: "Person",
+            3: "Location"
         }.get(data['label_ids'].numpy())
+
 
         logger.info(f"********** Task **********")
         logger.info(f"Input: {input_text}")

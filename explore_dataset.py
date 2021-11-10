@@ -37,9 +37,11 @@ def get_ids_and_masks(inputs, targets, index):
             "decoder_attention_mask": target_mask}
 
 
+# def clean_data(data: str):
+#     return data.replace("[CLS]", "").replace("[PAD]", "").strip()
 def clean_data(data: str):
-    return data.replace("[CLS]", "").replace("[PAD]", "").strip()
-
+    # amazon
+    return data.replace("[CLS]", "").replace("[SEP]", "").replace("[PAD]", "").strip()
 
 def t5_tokenized_examples(fname, max_len=256):
     dataset = get_dataset(fname)
@@ -51,10 +53,10 @@ def t5_tokenized_examples(fname, max_len=256):
     count_labels = {}
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
-        bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
-
-        input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
-
+        # bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
+        #
+        # input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
+        input_text = clean_data(bert_decoded_input)
 
 
         # Restaurant
@@ -70,9 +72,17 @@ def t5_tokenized_examples(fname, max_len=256):
         # }.get(data['label_ids'].numpy())
 
         # amazon_electronics_c
+        # label = {
+        #     0: "negative",
+        #     1: "positive",
+        # }.get(data['label_ids'].numpy())
+
+        # conll
         label = {
-            0: "negative",
-            1: "positive",
+            0: "Organization",
+            1: "Other",
+            2: "Person",
+            3: "Location"
         }.get(data['label_ids'].numpy())
 
         count += 1
@@ -106,7 +116,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "amazon_electronics_c"
+    dataset = "conll_c"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

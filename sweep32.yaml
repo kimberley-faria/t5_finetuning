@@ -16,4 +16,4 @@ parameters:
   training_ds_size:
     value: 32
   dataset:
-    values: [ 'amazon_electronics_c' ]
+    values: [ 'conll_c' ]
