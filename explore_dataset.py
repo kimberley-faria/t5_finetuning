@@ -77,12 +77,25 @@ def t5_tokenized_examples(fname, max_len=256):
         #     1: "positive",
         # }.get(data['label_ids'].numpy())
 
-        # conll
+        # # conll
+        # label = {
+        #     0: "Organization",
+        #     1: "Other",
+        #     2: "Person",
+        #     3: "Location"
+        # }.get(data['label_ids'].numpy())
+
+        # # airline
+        # label = {
+        #     0: "negative",
+        #     1: "neutral",
+        #     2: "positive"
+        # }.get(data['label_ids'].numpy())
+
+        # pb_bnew
         label = {
-            0: "Organization",
-            1: "Other",
-            2: "Person",
-            3: "Location"
+            0: "neutral",
+            1: "partisan",
         }.get(data['label_ids'].numpy())
 
         count += 1
@@ -116,7 +129,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "conll_c"
+    dataset = "pb_bnew"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

@@ -88,14 +88,39 @@ def t5_tokenized_examples(fname, max_len=128):
         #     1: "positive",
         # }.get(data['label_ids'].numpy())
 
-        # conll
-        label = {
-            0: "Organization",
-            1: "Other",
-            2: "Person",
-            3: "Location"
-        }.get(data['label_ids'].numpy())
+        # # conll
+        # label = {
+        #     0: "Organization",
+        #     1: "Other",
+        #     2: "Person",
+        #     3: "Location"
+        # }.get(data['label_ids'].numpy())
 
+        # # airline
+        # label = {
+        #     0: "negative",
+        #     1: "neutral",
+        #     2: "positive"
+        # }.get(data['label_ids'].numpy())
+
+        # # pmb_new
+        # label = {
+        #     0: "policy",
+        #     1: "attack",
+        #     2: "support",
+        #     3: "information",
+        #     4: "mobilization",
+        #     5: "personal",
+        #     6: "other",
+        #     7: "media",
+        #     8: "constituency",
+        # }.get(data['label_ids'].numpy())
+
+        # pb_bnew
+        label = {
+            0: "neutral",
+            1: "partisan",
+        }.get(data['label_ids'].numpy())
 
         logger.info(f"********** Task **********")
         logger.info(f"Input: {input_text}")

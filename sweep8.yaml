@@ -16,4 +16,4 @@ parameters:
   training_ds_size:
     value: 8
   dataset:
-    values: [ 'conll_c' ]
+    values: [ 'pb_bnew' ]
