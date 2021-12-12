@@ -38,6 +38,7 @@ def get_ids_and_masks(inputs, targets, index):
 
 
 # def clean_data(data: str):
+#     print(data)
 #     return data.replace("[CLS]", "").replace("[PAD]", "").strip()
 def clean_data(data: str):
     # amazon
@@ -53,11 +54,11 @@ def t5_tokenized_examples(fname, max_len=256):
     count_labels = {}
     for data in dataset:
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
-        # bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
+        bert_input_text = clean_data(bert_decoded_input).split(".")
         #
         # input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
-        input_text = clean_data(bert_decoded_input)
-
+        # input_text = clean_data(bert_decoded_input)
+        input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
 
         # Restaurant
         # label = {
@@ -92,11 +93,23 @@ def t5_tokenized_examples(fname, max_len=256):
         #     2: "positive"
         # }.get(data['label_ids'].numpy())
 
-        # pb_bnew
-        label = {
-            0: "neutral",
-            1: "partisan",
-        }.get(data['label_ids'].numpy())
+        # # pb_bnew
+        # label = {
+        #     0: "neutral",
+        #     1: "partisan",
+        # }.get(data['label_ids'].numpy())
+
+        # # scitail entailment
+        # label = {
+        #     0: "neutral",
+        #     1: "entailed",
+        # }.get(data['label_ids'].numpy())
+
+        # # # scitail sentiment
+        # label = {
+        #     0: "positive",
+        #     1: "negative",
+        # }.get(data['label_ids'].numpy())
 
         count += 1
         if data['label_ids'].numpy() not in count_labels:
@@ -130,6 +143,6 @@ def t5_tokenized_examples(fname, max_len=256):
 
 if __name__ == '__main__':
     dataset = "pb_bnew"
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=4)
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=32)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

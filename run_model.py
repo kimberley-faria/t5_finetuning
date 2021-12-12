@@ -76,6 +76,12 @@ def t5_tokenized_examples(fname, max_len=128):
         # bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
         # input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
 
+        # scitail
+
+        # bert_input_text = clean_data(bert_decoded_input).split(".")
+        # # # input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
+        # input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
+
         # # mrpc
         # label = {
         #     0: "not paraphrase",
@@ -96,12 +102,12 @@ def t5_tokenized_examples(fname, max_len=128):
         #     3: "Location"
         # }.get(data['label_ids'].numpy())
 
-        # # airline
-        # label = {
-        #     0: "negative",
-        #     1: "neutral",
-        #     2: "positive"
-        # }.get(data['label_ids'].numpy())
+        # airline
+        label = {
+            0: "negative",
+            1: "neutral",
+            2: "positive"
+        }.get(data['label_ids'].numpy())
 
         # # pmb_new
         # label = {
@@ -116,11 +122,19 @@ def t5_tokenized_examples(fname, max_len=128):
         #     8: "constituency",
         # }.get(data['label_ids'].numpy())
 
-        # pb_bnew
-        label = {
-            0: "neutral",
-            1: "partisan",
-        }.get(data['label_ids'].numpy())
+        # # pb_bnew
+        # label = {
+        #     0: "neutral",
+        #     1: "partisan",
+        # }.get(data['label_ids'].numpy())
+
+        # # scitail entailment
+        # label = {
+        #     0: "neutral",
+        #     1: "entailed",
+        # }.get(data['label_ids'].numpy())
+
+
 
         logger.info(f"********** Task **********")
         logger.info(f"Input: {input_text}")
