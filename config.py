@@ -14,28 +14,32 @@ WORKING_DIR = "/mnt/nfs/work1/mccallum/kfaria/t5_finetuning"
 
 DATASET_DIR = '/mnt/nfs/scratch1/tbansal/fewshot'
 
-LABELS_TYPE = "classification"
+LABELS_TYPE = "fine-tuning"
 
 SETTINGS_DICT = {
     # Unix-style
     'gypsum': {
         'data': SCRATCH_DIR,
         'root': WORKING_DIR,
-        'training_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train_{dataset_number}_{'
-                            'dataset_size}.tf_record',
-        'val_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_eval.tf_record',
-        'project': 't5-baselines'
+        # 'training_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_train.jsonl',
+        # 'val_dataset': '/mnt/nfs/scratch1/tbansal/fewshot/{dataset_name}_eval.jsonl',
+        'training_dataset': os.path.join(WORKING_DIR,
+                                         "datasets\\{dataset_name}\\{dataset_name}_train.jsonl"),
+        'val_dataset': os.path.join(WORKING_DIR,
+                                    "datasets\\{dataset_name}\\{dataset_name}_eval.jsonl"),
+        'project': 't5-pretaining-gypsum',
+        'model_path': os.path.join(WORKING_DIR, "model")
     },
     # Windows-style
     'local': {
         'data': os.path.join(BASE_DIR, "data"),
         'root': BASE_DIR,
         'training_dataset': os.path.join(BASE_DIR,
-                                         "datasets\\{dataset_name}\\{dataset_name}_train_{dataset_number}_{"
-                                         "dataset_size}.tf_record"),
+                                         "datasets\\{dataset_name}\\{dataset_name}_train.jsonl"),
         'val_dataset': os.path.join(BASE_DIR,
-                                    "datasets\\{dataset_name}\\{dataset_name}_eval.tf_record"),
-        'project': 't5-finetuning'
+                                    "datasets\\{dataset_name}\\{dataset_name}_eval.jsonl"),
+        'project': 't5-pretaining-local',
+        'model_path': os.path.join(BASE_DIR, "model")
     }
 }
 

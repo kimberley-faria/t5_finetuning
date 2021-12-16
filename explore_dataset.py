@@ -94,10 +94,10 @@ def t5_tokenized_examples(fname, max_len=256):
         # }.get(data['label_ids'].numpy())
 
         # # pb_bnew
-        # label = {
-        #     0: "neutral",
-        #     1: "partisan",
-        # }.get(data['label_ids'].numpy())
+        label = {
+            0: "neutral",
+            1: "partisan",
+        }.get(data['label_ids'].numpy())
 
         # # scitail entailment
         # label = {

@@ -2,9 +2,11 @@ import json
 import logging
 import os
 import sys
+import re
 
+import jsonlines
 import tensorflow as tf
-from transformers import TFT5ForConditionalGeneration, AutoTokenizer, BertTokenizer
+from transformers import TFT5ForConditionalGeneration, AutoTokenizer
 
 import wandb
 from config import SETTINGS, TRAINING_DATASET_FNAME, VALIDATION_DATASET_FNAME, LABELS_TYPE, SYSTEM, WANDB_ENTITY
@@ -19,25 +21,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def get_dataset_from_tf_records(fname, seq_length=128):
-    name_to_features = {
-        # "unique_ids": tf.FixedLenFeature([], tf.int64),
-        "input_ids": tf.io.FixedLenFeature([seq_length], tf.int64),
-        "input_mask": tf.io.FixedLenFeature([seq_length], tf.int64),
-        "segment_ids": tf.io.FixedLenFeature([seq_length], tf.int64),
-        "label_ids": tf.io.FixedLenFeature([], tf.int64),
-    }
-
-    def _decode_record(record, name_to_features):
-        '''Decodes a record to a TensorFlow example.'''
-        example = tf.io.parse_single_example(serialized=record, features=name_to_features)
-        return example
-
-    dataset = tf.data.TFRecordDataset(fname).map(
-        lambda x: _decode_record(x, name_to_features))
-    return dataset
-
-
 def get_ids_and_masks(inputs, targets, index):
     logger.debug(f"Split up the ids and attention_masks for inputs and targets for index {index}")
     source_ids = inputs[index]["input_ids"][0]
@@ -50,106 +33,36 @@ def get_ids_and_masks(inputs, targets, index):
             "decoder_attention_mask": target_mask}
 
 
-def clean_data(data: str):
-    # amazon
-    return data.replace("[CLS]", "").replace("[SEP]", "").replace("[PAD]", "").strip()
-    # mrpc, rte
-    # return data.replace("[CLS]", "").replace("[PAD]", "").strip()
-
-
 def t5_tokenized_examples(fname, max_len=128):
-    dataset = get_dataset_from_tf_records(fname)
-
-    bert_tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
-    tokenizer = AutoTokenizer.from_pretrained('t5-base')
-
     inputs = []
     targets = []
 
-    for data in dataset:
-        bert_decoded_input = bert_tokenizer.decode(data['input_ids'])
+    tokenizer = AutoTokenizer.from_pretrained('t5-base')
+    regex = re.compile(r"\[unused([\d]+)\]")
 
-        # amazon
-        input_text = clean_data(bert_decoded_input)
+    with jsonlines.open(fname) as dataset:
+        for task in dataset:
+            for data in task['text'][:config.batch_size]:
+                input_text = f"{data['sentence']}"
+                label = f"{data['label']}"
+                # label = regex.sub(r"<extra_id_\g<1>>", f"{data['label']}")
 
-        # # mrpc
-        # bert_input_text = clean_data(bert_decoded_input).split("[SEP]")
-        # input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
+                logger.info(f"********** Task **********")
+                logger.info(f"Tokens: {data['masked_tokens']}")
+                logger.info(f"Sentence: {input_text}")
+                logger.info(f"Output: {label}")
 
-        # scitail
+                tokenized_inputs = tokenizer(
+                    input_text, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
+                )
+                tokenized_targets = tokenizer(
+                    label, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
+                )
 
-        # bert_input_text = clean_data(bert_decoded_input).split(".")
-        # # # input_text = f"Sentence 1: {bert_input_text[0].strip()}.\nSentence 2: {bert_input_text[1].strip()}"
-        # input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
+                inputs.append(tokenized_inputs)
+                targets.append(tokenized_targets)
 
-        # # mrpc
-        # label = {
-        #     0: "not paraphrase",
-        #     1: "paraphrase",
-        # }.get(data['label_ids'].numpy())
-
-        # amazon_electronics_c
-        # label = {
-        #     0: "negative",
-        #     1: "positive",
-        # }.get(data['label_ids'].numpy())
-
-        # # conll
-        # label = {
-        #     0: "Organization",
-        #     1: "Other",
-        #     2: "Person",
-        #     3: "Location"
-        # }.get(data['label_ids'].numpy())
-
-        # airline
-        label = {
-            0: "negative",
-            1: "neutral",
-            2: "positive"
-        }.get(data['label_ids'].numpy())
-
-        # # pmb_new
-        # label = {
-        #     0: "policy",
-        #     1: "attack",
-        #     2: "support",
-        #     3: "information",
-        #     4: "mobilization",
-        #     5: "personal",
-        #     6: "other",
-        #     7: "media",
-        #     8: "constituency",
-        # }.get(data['label_ids'].numpy())
-
-        # # pb_bnew
-        # label = {
-        #     0: "neutral",
-        #     1: "partisan",
-        # }.get(data['label_ids'].numpy())
-
-        # # scitail entailment
-        # label = {
-        #     0: "neutral",
-        #     1: "entailed",
-        # }.get(data['label_ids'].numpy())
-
-
-
-        logger.info(f"********** Task **********")
-        logger.info(f"Input: {input_text}")
-        logger.info(f"Label: {label}")
-
-        tokenized_inputs = tokenizer(
-            input_text, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
-        )
-        tokenized_targets = tokenizer(
-            label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
-        )
-
-        inputs.append(tokenized_inputs)
-        targets.append(tokenized_targets)
-
+    logger.info("{}, {}".format(len(inputs), len(targets)))
     return [get_ids_and_masks(inputs, targets, i) for i in range(len(inputs))]
 
 
@@ -265,6 +178,10 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         lr = self.optimizer._decayed_lr(tf.float32)
 
         self.loss_tracker.update_state(loss)
+
+        tf.print(y)
+        tf.print(y_pred)
+        tf.print("*****************")
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
         metrics = {m.name: m.result() for m in self.metrics}
@@ -288,6 +205,29 @@ class FinetunedT5(TFT5ForConditionalGeneration):
         self.accuracy_all_tokens.update_state(y, y_pred)
         self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
         return {m.name: m.result() for m in self.metrics}
+
+    @tf.function
+    def predict_step(self, data):
+        x = data
+        y = x["labels"]
+        output = self(x, training=False)
+        loss = output[0]
+        loss = tf.reduce_mean(loss)
+        logits = output[1]
+        softmaxed_output = tf.nn.softmax(logits, axis=-1)
+        y_pred = tf.argmax(softmaxed_output, axis=-1)
+        y_no_eos = tf.gather(y, [0], axis=1)
+        y_pred_no_eos = tf.gather(y_pred, [0], axis=1)
+
+        self.loss_tracker.update_state(loss)
+        self.accuracy_all_tokens.update_state(y, y_pred)
+        self.accuracy_1st_token.update_state(y_no_eos, y_pred_no_eos)
+
+        result = {m.name: m.result() for m in self.metrics}
+        result['y_true'] = y
+        result['y_pred'] = y_pred
+
+        return result
 
 
 class CustomCallback(tf.keras.callbacks.Callback):
@@ -318,7 +258,6 @@ class CustomCallback(tf.keras.callbacks.Callback):
     def on_train_batch_end(self, batch, logs=None):
         logger.debug(
             f"({self.train_batch}) End of batch {batch} of epoch {self.epoch} of train; got log keys: {list(logs.keys())}")
-
         self.train_batch += 1
 
     def on_test_batch_end(self, batch, logs=None):
@@ -352,10 +291,25 @@ def train_test_model(training_ds_fpath, val_ds_fpath):
 
     model.compile(optimizer=optimizer)
 
+    logger.info("{}, {}".format(training_ds_fpath, val_ds_fpath))
     hist = model.fit(train_ds, epochs=config.epochs, batch_size=config.batch_size, callbacks=callbacks,
                      validation_data=valid_ds, validation_batch_size=config.batch_size)
 
     # model.save_weights(os.path.join(wandb.run.dir, "model.h5"))
+
+    model.save(os.path.join(wandb.run.dir, "model.tf"))
+    model.save(os.path.join(SETTINGS.get('model_path'), "model.tf"))
+
+    predictions = model.predict(valid_ds, batch_size=config.batch_size, callbacks=callbacks)
+    # print(predictions)
+    print(predictions['y_pred'].shape)
+
+    tokenizer = AutoTokenizer.from_pretrained('t5-base')
+
+    for i in range(8):
+
+        print(tokenizer.batch_decode(predictions['y_true']))
+        print(tokenizer.batch_decode(predictions['y_pred']))
 
     return hist.history
 
@@ -375,11 +329,9 @@ def run_model():
         hparams = {
             'batch_size': 2,
             'encoder_max_len': 128,
-            'lr': 0.00001,
-            'epochs': 5,
-            'training_ds_number': 0,
-            'training_ds_size': 4,
-            'dataset': 'restaurant'
+            'lr': 0.0001,
+            'epochs': 1,
+            'dataset': 'tasks_n2_1'
         }
         wandb_params["config"] = hparams
 
@@ -393,12 +345,9 @@ def run_model():
 
     logger.info(
         f"RUN_ID: {wandb.run.id}, DATASET: {config.dataset}, LABELS_TYPE: {LABELS_TYPE}, "
-        f"DATASET #: {config.training_ds_number}, DATASET_SIZE: {config.training_ds_size}, "
         f"# of EPOCHS: {config.epochs}, LR: {config.lr}")
 
-    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=config.dataset,
-                                                      dataset_number=config.training_ds_number,
-                                                      dataset_size=config.training_ds_size)
+    training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=config.dataset)
     _, _, a = training_ds_fpath.partition(f"{config.dataset}")
     train_ds = a.split(".")[0]
     first_token_val_accuracies = []
@@ -421,7 +370,9 @@ def run_model():
     dataset_dir = f'{SETTINGS.get("root")}/experiment_logs3/{config.dataset}/{LABELS_TYPE}'
     if not os.path.exists(dataset_dir):
         os.makedirs(dataset_dir)
-    experiment_result = f'{dataset_dir}/{training_dataset}_{config.epochs}_{config.lr}.json'
+    print(dataset_dir)
+    experiment_result = f'{dataset_dir}\{train_ds}_{config.epochs}_{config.lr}.json'
+    print(experiment_result)
     with open(experiment_result, 'w') as fp:
         json.dump(experiment_output, fp)
     logger.info(f"RUN {wandb.run.id} COMPLETED! - Saved results of {training_dataset} to {experiment_result}")
