@@ -56,9 +56,10 @@ def t5_tokenized_examples(fname, max_len=256):
         bert_decoded_input = tokenizer2.decode(data['input_ids'])
         bert_input_text = clean_data(bert_decoded_input).split(".")
         #
+        input_text = bert_input_text
         # input_text = f"Sentence 1: {bert_input_text[0].strip()} \nSentence 2: {bert_input_text[1].strip()}"
         # input_text = clean_data(bert_decoded_input)
-        input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
+        # input_text = f"Premise: {bert_input_text[0].strip()}.\nHypothesis: {bert_input_text[1].strip()}."
 
         # Restaurant
         # label = {
@@ -99,11 +100,11 @@ def t5_tokenized_examples(fname, max_len=256):
         #     1: "partisan",
         # }.get(data['label_ids'].numpy())
 
-        # # scitail entailment
-        # label = {
-        #     0: "neutral",
-        #     1: "entailed",
-        # }.get(data['label_ids'].numpy())
+        # scitail entailment
+        label = {
+            0: "neutral",
+            1: "entailed",
+        }.get(data['label_ids'].numpy())
 
         # # # scitail sentiment
         # label = {
@@ -142,7 +143,7 @@ def t5_tokenized_examples(fname, max_len=256):
 
 
 if __name__ == '__main__':
-    dataset = "pb_bnew"
+    dataset = "scitail_b"
     training_ds_fpath = TRAINING_DATASET_FNAME.format(dataset_name=dataset, dataset_number=0, dataset_size=32)
     _, _, a = training_ds_fpath.partition(f"{dataset}")
     t5_tokenized_examples(training_ds_fpath)

@@ -94,7 +94,7 @@ def t5_tokenized_examples(fname, max_len=128):
         #     1: "positive",
         # }.get(data['label_ids'].numpy())
 
-        # # conll
+        # conll
         # label = {
         #     0: "Organization",
         #     1: "Other",
@@ -102,12 +102,12 @@ def t5_tokenized_examples(fname, max_len=128):
         #     3: "Location"
         # }.get(data['label_ids'].numpy())
 
-        # airline
-        label = {
-            0: "negative",
-            1: "neutral",
-            2: "positive"
-        }.get(data['label_ids'].numpy())
+        # # airline
+        # label = {
+        #     0: "negative",
+        #     1: "neutral",
+        #     2: "positive"
+        # }.get(data['label_ids'].numpy())
 
         # # pmb_new
         # label = {
@@ -123,10 +123,10 @@ def t5_tokenized_examples(fname, max_len=128):
         # }.get(data['label_ids'].numpy())
 
         # # pb_bnew
-        # label = {
-        #     0: "neutral",
-        #     1: "partisan",
-        # }.get(data['label_ids'].numpy())
+        label = {
+            0: "neutral",
+            1: "partisan",
+        }.get(data['label_ids'].numpy())
 
         # # scitail entailment
         # label = {
@@ -144,7 +144,7 @@ def t5_tokenized_examples(fname, max_len=128):
             input_text, max_length=max_len, padding='max_length', return_tensors="tf", truncation=True
         )
         tokenized_targets = tokenizer(
-            label, max_length=2, padding='max_length', return_tensors="tf", truncation=True
+            label, max_length=5, padding='max_length', return_tensors="tf", truncation=True
         )
 
         inputs.append(tokenized_inputs)
