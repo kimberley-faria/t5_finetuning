@@ -127,3 +127,18 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# data dirs
+data/
+wandb/
+
+# ide files
+.idea
+
+#wandb logs
+data/wandb
+
+#slurm outputs
+slurm*.out
+
+datasets

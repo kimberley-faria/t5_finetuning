@@ -1,0 +1,1 @@
+{"amazon_electronics_c_train_2_16": {"num_of_epochs": 5, "learning_rate": 0.0001, "training_ds_fpath": "_train_2_16", "first_token_val_accuracy": [0.0, 0.0, 0.36500000953674316, 0.7099999785423279, 0.75], "all_token_val_accuracy": [0.0, 0.0, 0.36500000953674316, 0.7099999785423279, 0.75]}}

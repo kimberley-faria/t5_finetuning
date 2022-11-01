@@ -1,0 +1,1 @@
+{"airline_train_9_8": {"num_of_epochs": 5, "learning_rate": 0.0001, "training_ds_fpath": "_train_9_8", "first_token_val_accuracy": [0.0, 0.0, 0.08128415048122406, 0.6987704634666443, 0.6911202073097229], "all_token_val_accuracy": [0.0, 0.0, 0.08128415048122406, 0.6987704634666443, 0.6911202073097229]}}

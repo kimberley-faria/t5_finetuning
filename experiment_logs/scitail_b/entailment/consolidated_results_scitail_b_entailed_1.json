@@ -1,0 +1,674 @@
+[
+  {
+    "training_dataset_size": 4,
+    "epochs": 5,
+    "lr": 0.001,
+    "avg_val_acc": 0.49513137638568877,
+    "sd": 0.02200943758252674
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 5,
+    "lr": 0.0001,
+    "avg_val_acc": 0.043585780542343855,
+    "sd": 0.06649173238257249
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 5,
+    "lr": 0.0005,
+    "avg_val_acc": 0.47279752641916273,
+    "sd": 0.09295497813828507
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 5,
+    "lr": "1e-05",
+    "avg_val_acc": 0.0,
+    "sd": 0.0
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 10,
+    "lr": 0.001,
+    "avg_val_acc": 0.5153786718845368,
+    "sd": 0.032706880200340516
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 10,
+    "lr": 0.0001,
+    "avg_val_acc": 0.38083461821079256,
+    "sd": 0.06531630124079055
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 10,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5149922639131546,
+    "sd": 0.035814986378467646
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 10,
+    "lr": "1e-05",
+    "avg_val_acc": 0.0,
+    "sd": 0.0
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 20,
+    "lr": 0.001,
+    "avg_val_acc": 0.5013910382986069,
+    "sd": 0.03732398523948264
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 20,
+    "lr": 0.0001,
+    "avg_val_acc": 0.4909582644701004,
+    "sd": 0.03272229640281373
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 20,
+    "lr": 0.0005,
+    "avg_val_acc": 0.518160742521286,
+    "sd": 0.03019574213000538
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 20,
+    "lr": "1e-05",
+    "avg_val_acc": 0.0,
+    "sd": 0.0
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 30,
+    "lr": 0.001,
+    "avg_val_acc": 0.5157650679349899,
+    "sd": 0.04832466539539411
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 30,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5021638303995133,
+    "sd": 0.025175757400019705
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 30,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5292890250682831,
+    "sd": 0.04678450596314479
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 30,
+    "lr": "1e-05",
+    "avg_val_acc": 0.00015455950051546097,
+    "sd": 0.0004887600556468253
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 40,
+    "lr": 0.001,
+    "avg_val_acc": 0.5350850045680999,
+    "sd": 0.031435963866666417
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 40,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5095054090023041,
+    "sd": 0.020286808840581545
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 40,
+    "lr": 0.0005,
+    "avg_val_acc": 0.521870169043541,
+    "sd": 0.03957992168814294
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 40,
+    "lr": "1e-05",
+    "avg_val_acc": 0.00394126744940877,
+    "sd": 0.009634691570229477
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 50,
+    "lr": 0.001,
+    "avg_val_acc": 0.5129829972982407,
+    "sd": 0.03037879822090754
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 50,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5216383278369904,
+    "sd": 0.03164382912051454
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 50,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5425038635730743,
+    "sd": 0.05075946442152689
+  },
+  {
+    "training_dataset_size": 4,
+    "epochs": 50,
+    "lr": "1e-05",
+    "avg_val_acc": 0.006336939730681479,
+    "sd": 0.009322101204436713
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 5,
+    "lr": 0.001,
+    "avg_val_acc": 0.506027814745903,
+    "sd": 0.03353501980433105
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 5,
+    "lr": 0.0001,
+    "avg_val_acc": 0.36630602478981017,
+    "sd": 0.04795912802539489
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 5,
+    "lr": 0.0005,
+    "avg_val_acc": 0.508887168765068,
+    "sd": 0.02899851200889412
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 5,
+    "lr": "1e-05",
+    "avg_val_acc": 0.0,
+    "sd": 0.0
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 10,
+    "lr": 0.001,
+    "avg_val_acc": 0.5407264262437821,
+    "sd": 0.047917668320184514
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 10,
+    "lr": 0.0001,
+    "avg_val_acc": 0.4963678568601608,
+    "sd": 0.007073901369366526
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 10,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5384080350399018,
+    "sd": 0.03475976974454464
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 10,
+    "lr": "1e-05",
+    "avg_val_acc": 0.0,
+    "sd": 0.0
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 20,
+    "lr": 0.001,
+    "avg_val_acc": 0.5367078810930253,
+    "sd": 0.03682362132555947
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 20,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5270479083061218,
+    "sd": 0.0330611228122736
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 20,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5457496166229248,
+    "sd": 0.056454550165956366
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 20,
+    "lr": "1e-05",
+    "avg_val_acc": 0.00023183925077319145,
+    "sd": 0.000733140083470238
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 30,
+    "lr": 0.001,
+    "avg_val_acc": 0.5336166977882385,
+    "sd": 0.036773129910080755
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 30,
+    "lr": 0.0001,
+    "avg_val_acc": 0.554018548130989,
+    "sd": 0.03817069032793528
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 30,
+    "lr": 0.0005,
+    "avg_val_acc": 0.534003096818924,
+    "sd": 0.047934213953757666
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 30,
+    "lr": "1e-05",
+    "avg_val_acc": 0.04814528608694672,
+    "sd": 0.04928842376230363
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 40,
+    "lr": 0.001,
+    "avg_val_acc": 0.5346986085176468,
+    "sd": 0.04255995279638107
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 40,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5621329247951508,
+    "sd": 0.03608263740308712
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 40,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5473724842071533,
+    "sd": 0.04652792452611572
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 40,
+    "lr": "1e-05",
+    "avg_val_acc": 0.21267388090491296,
+    "sd": 0.07198484500372225
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 50,
+    "lr": 0.001,
+    "avg_val_acc": 0.5278979957103729,
+    "sd": 0.05556797568479295
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 50,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5523183912038803,
+    "sd": 0.03887281438055451
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 50,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5406491458415985,
+    "sd": 0.03724103089546777
+  },
+  {
+    "training_dataset_size": 8,
+    "epochs": 50,
+    "lr": "1e-05",
+    "avg_val_acc": 0.35965996980667114,
+    "sd": 0.052594666031967614
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 5,
+    "lr": 0.001,
+    "avg_val_acc": 0.5446676909923553,
+    "sd": 0.05828098459358813
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 5,
+    "lr": 0.0001,
+    "avg_val_acc": 0.48145285844802854,
+    "sd": 0.022875625813551737
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 5,
+    "lr": 0.0005,
+    "avg_val_acc": 0.534080371260643,
+    "sd": 0.03172854437034019
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 5,
+    "lr": "1e-05",
+    "avg_val_acc": 0.0,
+    "sd": 0.0
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 10,
+    "lr": 0.001,
+    "avg_val_acc": 0.5470633715391159,
+    "sd": 0.03444217903762046
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 10,
+    "lr": 0.0001,
+    "avg_val_acc": 0.533539417386055,
+    "sd": 0.03498269145728361
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 10,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5653786718845367,
+    "sd": 0.039910758094613086
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 10,
+    "lr": "1e-05",
+    "avg_val_acc": 0.0005409582518041134,
+    "sd": 0.0008186629613037866
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 20,
+    "lr": 0.001,
+    "avg_val_acc": 0.5534775912761688,
+    "sd": 0.03219433074458262
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 20,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5713292241096497,
+    "sd": 0.02215067590073241
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 20,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5745749592781066,
+    "sd": 0.03639038118496235
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 20,
+    "lr": "1e-05",
+    "avg_val_acc": 0.191499225795269,
+    "sd": 0.08338799812193173
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 30,
+    "lr": 0.001,
+    "avg_val_acc": 0.5714837670326233,
+    "sd": 0.04321259935988236
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 30,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5871715605258941,
+    "sd": 0.0280553797197744
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 30,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5710973799228668,
+    "sd": 0.03230380407714031
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 30,
+    "lr": "1e-05",
+    "avg_val_acc": 0.45749613642692566,
+    "sd": 0.036223607146534144
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 40,
+    "lr": 0.001,
+    "avg_val_acc": 0.5714837789535523,
+    "sd": 0.03427763268855549
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 40,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5923493027687072,
+    "sd": 0.03053229630474245
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 40,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5776661515235901,
+    "sd": 0.03438200507377516
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 40,
+    "lr": "1e-05",
+    "avg_val_acc": 0.49613600969314575,
+    "sd": 0.006805688432723023
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 50,
+    "lr": 0.001,
+    "avg_val_acc": 0.5655332267284393,
+    "sd": 0.04824166029107195
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 50,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5928902685642242,
+    "sd": 0.04273477303604078
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 50,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5901854753494262,
+    "sd": 0.02754758894109487
+  },
+  {
+    "training_dataset_size": 16,
+    "epochs": 50,
+    "lr": "1e-05",
+    "avg_val_acc": 0.49080370664596557,
+    "sd": 0.010840295554259716
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 5,
+    "lr": 0.001,
+    "avg_val_acc": 0.5349304467439652,
+    "sd": 0.04171643726739602
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 5,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5145285844802856,
+    "sd": 0.013063095743153582
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 5,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5930448293685913,
+    "sd": 0.04673307689244287
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 5,
+    "lr": "1e-05",
+    "avg_val_acc": 7.727975025773048e-05,
+    "sd": 0.00024438002782341267
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 10,
+    "lr": 0.001,
+    "avg_val_acc": 0.5574961274862289,
+    "sd": 0.0462434639086196
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 10,
+    "lr": 0.0001,
+    "avg_val_acc": 0.5837712466716767,
+    "sd": 0.034410863105229623
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 10,
+    "lr": 0.0005,
+    "avg_val_acc": 0.6013910412788391,
+    "sd": 0.030148573624301955
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 10,
+    "lr": "1e-05",
+    "avg_val_acc": 0.24397217556834222,
+    "sd": 0.11399632235833879
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 20,
+    "lr": 0.001,
+    "avg_val_acc": 0.5625193178653717,
+    "sd": 0.03529474817604785
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 20,
+    "lr": 0.0001,
+    "avg_val_acc": 0.6356259763240815,
+    "sd": 0.018665724459386815
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 20,
+    "lr": 0.0005,
+    "avg_val_acc": 0.6153786718845368,
+    "sd": 0.026613998251843903
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 20,
+    "lr": "1e-05",
+    "avg_val_acc": 0.49775888621807096,
+    "sd": 0.0030140214867104428
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 30,
+    "lr": 0.001,
+    "avg_val_acc": 0.5751159071922303,
+    "sd": 0.027595103105507033
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 30,
+    "lr": 0.0001,
+    "avg_val_acc": 0.6509273529052735,
+    "sd": 0.02112642339607867
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 30,
+    "lr": 0.0005,
+    "avg_val_acc": 0.611128282546997,
+    "sd": 0.04741616817307652
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 30,
+    "lr": "1e-05",
+    "avg_val_acc": 0.5013910293579101,
+    "sd": 0.006524936618359074
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 40,
+    "lr": 0.001,
+    "avg_val_acc": 0.5974497675895691,
+    "sd": 0.03952859581556195
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 40,
+    "lr": 0.0001,
+    "avg_val_acc": 0.6370170056819916,
+    "sd": 0.01929776139405318
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 40,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5833848476409912,
+    "sd": 0.04889563177510955
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 40,
+    "lr": "1e-05",
+    "avg_val_acc": 0.5153786718845368,
+    "sd": 0.013357705019673255
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 50,
+    "lr": 0.001,
+    "avg_val_acc": 0.5788253545761108,
+    "sd": 0.020129028299194628
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 50,
+    "lr": 0.0001,
+    "avg_val_acc": 0.6529366195201873,
+    "sd": 0.026924851018706914
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 50,
+    "lr": 0.0005,
+    "avg_val_acc": 0.5931221067905426,
+    "sd": 0.04832063047146392
+  },
+  {
+    "training_dataset_size": 32,
+    "epochs": 50,
+    "lr": "1e-05",
+    "avg_val_acc": 0.5292117476463318,
+    "sd": 0.014922080774485489
+  }
+]
